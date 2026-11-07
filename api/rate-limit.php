@@ -13,7 +13,8 @@ function auth_rate_limit_keys(string $scope, string $identifier): array
 function auth_rate_limit_retry_after(
     PDO $database,
     string $scope,
-    string $identifier
+    string $identifier,
+    int $windowSeconds = 60
 ): int {
     $keys = auth_rate_limit_keys($scope, $identifier);
     $placeholders = implode(', ', array_fill(0, count($keys), '?'));
@@ -28,7 +29,7 @@ function auth_rate_limit_retry_after(
     $expire->execute([
         $scope,
         date('Y-m-d H:i:s'),
-        date('Y-m-d H:i:s', time() - 900),
+        date('Y-m-d H:i:s', time() - $windowSeconds),
     ]);
 
     $query = $database->prepare(
@@ -51,7 +52,7 @@ function auth_rate_limit_record_attempt(
     string $scope,
     string $identifier,
     int $maxAttempts = 5,
-    int $windowSeconds = 900
+    int $windowSeconds = 60
 ): void {
     $now = time();
     $nowText = date('Y-m-d H:i:s', $now);
