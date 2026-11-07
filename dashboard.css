@@ -263,6 +263,7 @@ input:disabled {
   color: #fff;
   border-radius: 20px;
   padding: 26px;
+  margin-bottom: 28px;
 }
 .slots {
   display: grid;
@@ -482,7 +483,7 @@ dd {
 
 /* Study Load Widget */
 .study-load-widget {
-  margin-bottom: 22px;
+  margin-bottom: 28px;
   padding: 22px 26px;
   background: var(--card);
   border: 1px solid var(--ln);
@@ -562,4 +563,63 @@ dd {
 }
 .btn-view-cor:hover .arrow {
   transform: translateX(3px);
+}
+
+
+/* Dashboard Footer Actions (Discreet Low Right Logout) */
+.dashboard-footer-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 36px;
+  padding: 12px 0 28px;
+}
+
+.btn-subtle-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--ln);
+  background: var(--card);
+  color: var(--mut);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.25s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-subtle-exit svg {
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.btn-subtle-exit:hover {
+  opacity: 1;
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(239, 68, 68, 0.06);
+  transform: translateY(-1px);
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-logout svg {
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.sidebar-logout:hover {
+  opacity: 1;
+  color: #fca5a5 !important;
+  background: rgba(239, 68, 68, 0.15) !important;
 }

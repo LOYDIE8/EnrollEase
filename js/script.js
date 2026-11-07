@@ -229,6 +229,32 @@ function logout() {
   });
 }
 
+function confirmLogout() {
+  const modal = showModal(`
+    <div style="text-align: center; padding: 12px 6px 8px;">
+      <div style="width: 52px; height: 52px; margin: 0 auto 16px; border-radius: 50%; background: rgba(239, 68, 68, 0.12); color: #ef4444; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </div>
+      <h3 style="margin: 0 0 8px 0; font-size: 19px; font-weight: 700; color: var(--tx);">Log out of your account?</h3>
+      <p class="muted" style="margin: 0 0 24px 0; font-size: 13.5px; line-height: 1.5;">Are you sure you want to end your current session? You will need to sign in again to access appointments and records.</p>
+      <div class="row" style="gap: 12px; justify-content: center;">
+        <button type="button" class="btn alt" id="cancelLogoutModalBtn" style="flex: 1; height: 42px; font-size: 14px; font-weight: 600;">Cancel</button>
+        <button type="button" class="btn" id="confirmLogoutModalBtn" style="flex: 1; height: 42px; font-size: 14px; font-weight: 600; background: #dc2626; border-color: #dc2626; color: #fff;">Log Out</button>
+      </div>
+    </div>
+  `);
+
+  modal.querySelector('#cancelLogoutModalBtn').onclick = () => modal.remove();
+  modal.querySelector('#confirmLogoutModalBtn').onclick = () => {
+    modal.remove();
+    logout();
+  };
+}
+
 
 /* ---------- 4. FORM HELPERS ---------- */
 // A label + input + empty red error line.
@@ -392,7 +418,14 @@ function withSidebar(content) {
       <aside class="side" id="sidebar">
         <div class="logo">CTU <span>Daanbantayan Campus</span></div>
         ${links}
-        <a href="#" id="sidebarLogout">🚪 Logout</a>
+        <a href="#" id="sidebarLogout" class="sidebar-logout" title="Log out">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
+        </a>
       </aside>
       <main class="main">
         <div class="top">
@@ -558,11 +591,27 @@ PAGES.dashboard = {
         ${tile('enrollment.html', '🎓', 'Enrollment & COR', '<p class="muted">Official Study Load (COR)</p>')}
         ${tile('profile.html', '👤', 'Profile', '<p class="muted">Your information</p>')}
         ${tile('settings.html', '⚙️', 'Settings', '<p class="muted">Preferences</p>')}
-        <a class="card tile" href="#" id="dashboardLogout"><div class="ic">🚪</div><b>Logout</b></a>
+      </div>
+
+      <div class="dashboard-footer-bar">
+        <button type="button" class="btn-subtle-exit" id="dashboardLogout" title="Log out of student account">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Sign out</span>
+        </button>
       </div>`);
   },
   setup() {
-    select('#dashboardLogout').onclick = event => { event.preventDefault(); logout(); };
+    const logoutBtn = select('#dashboardLogout');
+    if (logoutBtn) {
+      logoutBtn.onclick = event => {
+        event.preventDefault();
+        confirmLogout();
+      };
+    }
   }
 };
 
@@ -1555,7 +1604,7 @@ const startApplication = async () => {
   const menuButton = select('#menuButton');
   if (menuButton) menuButton.onclick = () => select('#sidebar').classList.toggle('open');
   const sidebarLogout = select('#sidebarLogout');
-  if (sidebarLogout) sidebarLogout.onclick = event => { event.preventDefault(); logout(); };
+  if (sidebarLogout) sidebarLogout.onclick = event => { event.preventDefault(); confirmLogout(); };
 
   // Show a message left by the previous page
   const message = sessionStorage.getItem('ee_flash');
