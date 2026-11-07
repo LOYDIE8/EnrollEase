@@ -193,6 +193,8 @@ input:disabled {
   height: 100vh;
   transition: transform 0.3s;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
 }
 .side .logo {
   color: #fff;
@@ -783,4 +785,90 @@ dd {
   .ctu-grid-table td {
     border-color: #333 !important;
   }
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.sidebar-logout svg {
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+.sidebar-logout:hover {
+  opacity: 1;
+  color: #fca5a5 !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+}
+
+
+/* ========================================================
+   Enhanced Dark Mode Styles - Darker Navbar with Distinct Depth
+   ======================================================== */
+[data-theme="dark"] {
+  --bg: #0b1329;
+  --card: #131d36;
+  --tx: #f1f5f9;
+  --mu: #94a3b8;
+  --ln: #223254;
+  --sh: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .side {
+  background: #030712 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .side .logo {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .side .logo span {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .side a {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .side a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+[data-theme="dark"] .side a.on {
+  background: rgba(37, 99, 235, 0.28);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  font-weight: 600;
+  transform: translateX(4px);
+}
+
+[data-theme="dark"] .top {
+  background: #030712 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .burger {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+
+[data-theme="dark"] .sidebar-logout {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .sidebar-logout:hover {
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.15) !important;
 }

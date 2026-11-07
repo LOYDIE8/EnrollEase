@@ -557,7 +557,15 @@ PAGES.dashboard = {
     return withSidebar(`
       <div class="banner">
         <p style="margin:0;opacity:.85">Welcome back · <span style="background:rgba(255,255,255,0.22);padding:2px 8px;border-radius:6px;font-weight:700;letter-spacing:0.3px">${escapeHtml(user.section || 'Not set')}</span></p>
-        <h1>${escapeHtml(user.name)}</h1>
+        <h1 style="margin: 6px 0 10px;">
+          <a href="profile.html" class="banner-profile-link" title="View your student profile">
+            <span>${escapeHtml(user.name)}</span>
+            <svg class="profile-arrow-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </h1>
         <p style="margin:0">${next
           ? 'Next appointment: ' + formatDate(next.date) + ' at ' + next.time + ' (' + next.type + ')'
           : 'You have no upcoming appointments.'}</p>
@@ -589,8 +597,6 @@ PAGES.dashboard = {
         ${tile('my-schedule.html', '🎟️', 'Queue Number',
                next ? `<div class="q">${next.queue}</div>` : '<p class="muted">No active queue</p>')}
         ${tile('enrollment.html', '🎓', 'Enrollment & COR', '<p class="muted">Official Study Load (COR)</p>')}
-        ${tile('profile.html', '👤', 'Profile', '<p class="muted">Your information</p>')}
-        ${tile('settings.html', '⚙️', 'Settings', '<p class="muted">Preferences</p>')}
       </div>
 
       <div class="dashboard-footer-bar">
@@ -605,6 +611,13 @@ PAGES.dashboard = {
       </div>`);
   },
   setup() {
+    const profileLink = select('.banner-profile-link');
+    if (profileLink) {
+      profileLink.onclick = event => {
+        event.preventDefault();
+        goTo('profile');
+      };
+    }
     const logoutBtn = select('#dashboardLogout');
     if (logoutBtn) {
       logoutBtn.onclick = event => {
