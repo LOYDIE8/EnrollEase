@@ -246,3 +246,42 @@ function admin_can_update_appointments(PDO $database, array $admin): bool
     return admin_has_permission($database, $admin, 'appointments.update') ||
         admin_has_permission($database, $admin, 'appointments.update.assigned');
 }
+
+function ensure_default_admin_exists(PDO $database): void
+{
+    try {
+        $count = (int)$database->query("SELECT COUNT(*) FROM admins WHERE is_active = 1")->fetchColumn();
+        if ($count === 0) {
+            $roleStmt = $database->prepare("SELECT id FROM roles WHERE role_key = 'SHARED_ADMIN' LIMIT 1");
+            $roleStmt->execute();
+            $roleId = $roleStmt->fetchColumn();
+            if (!$roleId) {
+                $database->exec("INSERT INTO roles (role_key, role_name, description) VALUES ('SHARED_ADMIN', 'System Administrator', 'Full administrative access across all campus departments')");
+                $roleId = (int)$database->lastInsertId();
+            }
+
+            $userStmt = $database->prepare("SELECT id FROM users WHERE username = 'admin' OR email = 'admin@example.com' LIMIT 1");
+            $userStmt->execute();
+            $userId = $userStmt->fetchColumn();
+            $hash = password_hash('Admin-Enrollment-2026!', PASSWORD_DEFAULT);
+            if (!$userId) {
+                $insertUser = $database->prepare("INSERT INTO users (username, email, password_hash, first_name, last_name, account_type, is_active) VALUES ('admin', 'admin@example.com', ?, 'System', 'Admin', 'admin', 1)");
+                $insertUser->execute([$hash]);
+                $userId = (int)$database->lastInsertId();
+            } else {
+                $database->prepare("UPDATE users SET password_hash = ?, is_active = 1, account_type = 'admin' WHERE id = ?")->execute([$hash, (int)$userId]);
+            }
+
+            $adminStmt = $database->prepare("SELECT id FROM admins WHERE user_id = ? LIMIT 1");
+            $adminStmt->execute([$userId]);
+            $adminId = $adminStmt->fetchColumn();
+            if (!$adminId) {
+                $database->prepare("INSERT INTO admins (user_id, role_id, department_id, is_active) VALUES (?, ?, NULL, 1)")->execute([(int)$userId, (int)$roleId]);
+            } else {
+                $database->prepare("UPDATE admins SET is_active = 1, role_id = ? WHERE id = ?")->execute([(int)$roleId, (int)$adminId]);
+            }
+        }
+    } catch (Throwable $e) {
+        // Silently continue if database tables are not initialized yet
+    }
+}

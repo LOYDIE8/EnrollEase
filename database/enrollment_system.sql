@@ -88,6 +88,22 @@ VALUES (8240003, 'Transcript of Records', 'unresolved', 1);
 INSERT INTO enrollment_holds (student_id, reason, status)
 VALUES (8240004, 'Active enrollment hold for testing', 'active');
 
+-- Default administrator account for local development:
+-- Username: admin
+-- Email: admin@example.com
+-- Password: Admin-Enrollment-2026! (also accepts Admin123!)
+INSERT INTO users (username, email, password_hash, first_name, last_name, account_type)
+SELECT 'admin', 'admin@example.com', '$2y$10$tekhq2rjhoLm/rgOOX7Msui6bAVvDjo67Ojy1db2c12zFHY2XoK3S', 'System', 'Admin', 'admin'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin' OR email = 'admin@example.com');
+
+INSERT INTO admins (user_id, role_id, department_id, is_active)
+SELECT u.id, r.id, NULL, 1
+FROM users u
+JOIN roles r ON r.role_key = 'SHARED_ADMIN'
+WHERE u.username = 'admin'
+  AND NOT EXISTS (SELECT 1 FROM admins WHERE user_id = u.id);
+
 COMMIT;
 
 -- Enrollment schedules and appointment times are seeded by database/schema.sql.

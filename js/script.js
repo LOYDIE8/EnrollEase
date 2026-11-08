@@ -522,6 +522,10 @@ PAGES.login = {
         if (!response.ok || !result.success) {
           return showError('loginPassword', result.message || 'Unable to sign in.');
         }
+        if (result.role === 'admin' || result.redirect) {
+          window.location.assign(result.redirect || 'admin/dashboard.php');
+          return;
+        }
         sessionStorage.setItem('ee_csrf', result.csrfToken);
         saveData('ee_users', [result.profile]);
         sessionStorage.setItem('ee_session', result.profile.sid);
