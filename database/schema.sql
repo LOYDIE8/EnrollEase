@@ -64,7 +64,7 @@ CREATE TABLE users (
 CREATE TABLE students (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL,
-  student_number VARCHAR(7) NULL,
+  student_number VARCHAR(12) NULL,
   middle_name VARCHAR(100) NULL,
   program VARCHAR(150) NOT NULL,
   year_level VARCHAR(40) NULL,
@@ -79,7 +79,7 @@ CREATE TABLE students (
   UNIQUE KEY uq_students_number (student_number),
   KEY ix_students_department_status (department_id, academic_status),
   KEY ix_students_campus_status (campus_id, student_status),
-  CONSTRAINT chk_students_number_format CHECK (student_number IS NULL OR student_number REGEXP '^824[0-9]{4}$'),
+  CONSTRAINT chk_students_number_format CHECK (student_number IS NULL OR student_number REGEXP '^(824[0-9]{4}|[0-9]{12})$'),
   CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT fk_students_department FOREIGN KEY (department_id) REFERENCES departments (id),
   CONSTRAINT fk_students_campus FOREIGN KEY (campus_id) REFERENCES campuses (campus_id),
@@ -305,7 +305,7 @@ CREATE TABLE system_settings (
 
 CREATE TABLE enrolled_student_registry (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  student_number VARCHAR(7) NOT NULL,
+  student_number VARCHAR(12) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   program VARCHAR(150) NOT NULL,
   year_level VARCHAR(40) NOT NULL,

@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTU Daanbantayan Campus Enrollment System | Login</title>
+    <title>EnrollEase | Login</title>
     <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="css/professional-ui.css?v=auth-glass-20261108">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-<body data-page="login">
+<body class="student-login" data-page="login">
 
     <div class="login-page">
 
         <header class="navbar">
-            <a href="#" class="logo">
+            <a href="landing.html" class="logo">
                 <i class="fa-solid fa-graduation-cap"></i>
-                <span>CTU Daanbantayan Campus</span>
+                <span>EnrollEase</span>
             </a>
 
             <div class="register">
@@ -50,18 +51,20 @@
                 <form action="#" method="post" id="loginForm" novalidate>
 
                     <div class="field-group">
+                        <label for="loginId">Email address or Student ID / LRN</label>
                         <div class="input-box">
                             <i class="fa-solid fa-user"></i>
                             <input type="text"
                                    id="loginId"
                                    name="loginId"
-                                   placeholder="Email Address or Student ID"
+                                   placeholder="Enter your email, student ID, or LRN"
                                    required>
                         </div>
                         <small id="error-loginId" class="error"></small>
                     </div>
 
                     <div class="field-group">
+                        <label for="loginPassword">Password</label>
                         <div class="input-box">
                             <i class="fa-solid fa-lock"></i>
                             <input type="password"
@@ -89,7 +92,6 @@
                     </button>
 
                 </form>
-                <p class="admin-login-option">Are you an administrator? <a href="admin-login/admin-login.html">Admin Login</a></p>
 
             </section>
 

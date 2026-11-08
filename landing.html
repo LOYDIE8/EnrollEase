@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTU Daanbantayan Campus Enrollment System</title>
+    <title>EnrollEase</title>
     <link rel="stylesheet" href="landing.css">
 </head>
-<body>
+<body class="public-home">
     <main class="page">
         <header class="navbar">
             <a href="#home" class="brand" aria-label="EnrollEase home">
@@ -15,7 +15,7 @@
                     <path d="M13 23.5v9.2C18 39 24.5 43 32 43s14-4 19-10.3v-9.2L32 35 13 23.5Z" fill="currentColor"/>
                     <path d="M60 17h3v13h-3z" fill="currentColor"/>
                 </svg>
-                <span>CTU Daanbantayan Campus</span>
+                <span>EnrollEase</span>
             </a>
 
             <nav class="nav-links" aria-label="Main navigation">
@@ -26,23 +26,22 @@
             </nav>
 
             <div class="nav-actions">
-                <a class="button button-login" href="login.html" data-entry-page="login.html">Login</a>
-                <a class="button button-register" href="register.html" data-entry-page="register.html">Register</a>
-                <a class="button button-login" href="admin-login/admin-login.html">Admin Login</a>
+                <a class="button button-login" href="login.html">Login</a>
+                <a class="button button-register" href="register.html">Register</a>
             </div>
         </header>
 
         <section class="hero" id="home">
             <div class="hero-copy">
                 <p class="eyebrow">CTU DAANBANTAYAN CAMPUS ENROLLMENT SYSTEM</p>
-                <h1>Enroll Smarter .<br>Save Time.</h1>
+                <h1>Enroll Smarter.<br>Save Time.</h1>
                 <p class="description">
                     Skip the long lines and stressful queues,<br class="desktop-break">
                     the campus enrollment system makes your process<br class="desktop-break">
                     faster, easier, and more organized. All in one place
                 </p>
                 <div class="hero-buttons">
-                    <a class="button button-primary" href="register.html" data-entry-page="register.html">Get Started <span aria-hidden="true">➜</span></a>
+                    <a class="button button-primary" href="register.html">Get Started <span aria-hidden="true">➜</span></a>
                     <a class="button button-secondary" href="#how-it-works">Learn More</a>
                 </div>
             </div>
@@ -291,6 +290,7 @@
             <p class="contact-description">
                 For enrollment assistance, contact the Registrar's Office through your campus student services desk.
             </p>
+            <p class="admin-access-link">Campus staff? <a href="admin-login/admin-login.html">Administrator sign in</a></p>
         </div>
 
     </div>

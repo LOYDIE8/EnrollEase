@@ -76,7 +76,7 @@ function enrollment_eligibility(PDO $database, int $studentId): array
     }
     $add('student', 'Student information verified',
         (bool)$student['is_active'] && $student['campus_name'] === 'Daanbantayan Campus' &&
-        preg_match('/\A824[0-9]{4}\z/', (string)$student['student_number']) === 1 &&
+        preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', (string)$student['student_number']) === 1 &&
         trim($student['first_name'] . $student['last_name']) !== '' && filter_var($student['email'], FILTER_VALIDATE_EMAIL),
         [
             $student['campus_name'] !== 'Daanbantayan Campus'

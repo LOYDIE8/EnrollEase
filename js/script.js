@@ -410,29 +410,52 @@ const HIGHLIGHT = {
 
 function withSidebar(content) {
   const active = HIGHLIGHT[currentPage] || currentPage;
+  const user = currentUser();
+  const studentName = user.name || 'Student';
+  const nameParts = studentName.trim().split(/\s+/).filter(Boolean);
+  const initials = nameParts.slice(0, 2).map(part => part.charAt(0).toUpperCase()).join('') || 'ST';
   const links = MENU.map(([page, icon, label]) =>
-    `<a href="${page}.html" class="${page === active ? 'on' : ''}">${icon} ${label}</a>`).join('');
+    `<a href="${page}.html" class="side-link ${page === active ? 'on' : ''}" ${page === active ? 'aria-current="page"' : ''}>
+      <span class="side-icon" aria-hidden="true">${icon}</span><span>${label}</span>
+    </a>`).join('');
 
   return `
     <div class="shell">
       <aside class="side" id="sidebar">
-        <div class="logo">CTU <span>Daanbantayan Campus</span></div>
-        ${links}
-        <a href="#" id="sidebarLogout" class="sidebar-logout" title="Log out">
+        <a class="side-brand" href="dashboard.html">
+          <span class="side-brand-mark" aria-hidden="true">E</span>
+          <span class="side-brand-copy"><strong>Enroll<span>Ease</span></strong><small>Student portal</small></span>
+        </a>
+        <div class="side-heading">STUDENT MENU</div>
+        <nav class="side-nav" aria-label="Student navigation">${links}</nav>
+        <div class="side-footer">
+          <a class="side-account" href="profile.html">
+            <span class="side-avatar" aria-hidden="true">${escapeHtml(initials)}</span>
+            <span class="side-account-copy"><strong>${escapeHtml(studentName)}</strong><small>Student account</small></span>
+          </a>
+          <a href="#" id="sidebarLogout" class="sidebar-logout" title="Log out">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          <span>Logout</span>
-        </a>
-      </aside>
-      <main class="main">
-        <div class="top">
-          <button class="burger" id="menuButton" aria-label="Menu">☰</button>
-          <b class="logo">CTU Daanbantayan Campus Enrollment System</b>
+          <span>Sign out</span>
+          </a>
         </div>
-        ${content}
+      </aside>
+      <button class="sidebar-backdrop" id="sidebarBackdrop" type="button" aria-label="Close navigation"></button>
+      <main class="main">
+        <header class="top">
+          <div class="topbar-leading">
+            <button class="burger" id="menuButton" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">☰</button>
+            <div class="topbar-heading"><span>STUDENT PORTAL</span><strong>Welcome, ${escapeHtml(nameParts[0] || 'Student')}</strong></div>
+          </div>
+          <a class="topbar-profile" href="profile.html">
+            <span class="topbar-avatar" aria-hidden="true">${escapeHtml(initials)}</span>
+            <span class="topbar-profile-copy"><strong>${escapeHtml(studentName)}</strong><small>View profile</small></span>
+          </a>
+        </header>
+        <div class="main-content">${content}</div>
       </main>
     </div>`;
 }
@@ -465,7 +488,7 @@ PAGES.index = {
 PAGES.login = {
   render: () => `
     <div class="auth"><form class="card" id="loginForm" novalidate>
-      <div class="logo center">CTU Daanbantayan Campus</div>
+      <div class="logo center">EnrollEase</div>
       <h2 class="center">Welcome back</h2>
       <p class="muted center">Sign in with your registered student account.</p>
       ${inputField('loginId', 'Email Address or Student ID')}
@@ -473,7 +496,6 @@ PAGES.login = {
       <a href="#" id="forgotLink">Forgot password?</a><br><br>
       <button type="submit" class="btn" style="width:100%">Login</button>
       <p class="center">No account yet? <a href="register.html">Register</a></p>
-      <p class="center admin-login-option">Are you an administrator? <a href="admin-login/admin-login.html">Admin Login</a></p>
     </form></div>`,
 
   setup() {
@@ -1605,8 +1627,11 @@ const startApplication = async () => {
       passwordToggle.onclick = () => {
         const showingPassword = passwordInput.type === 'text';
         passwordInput.type = showingPassword ? 'password' : 'text';
-        passwordToggle.classList.toggle('fa-eye', showingPassword);
-        passwordToggle.classList.toggle('fa-eye-slash', !showingPassword);
+        const passwordToggleIcon = passwordToggle.querySelector('i') || passwordToggle;
+        passwordToggleIcon.classList.toggle('fa-eye', showingPassword);
+        passwordToggleIcon.classList.toggle('fa-eye-slash', !showingPassword);
+        passwordToggle.setAttribute('aria-label', showingPassword ? 'Show password' : 'Hide password');
+        passwordToggle.setAttribute('aria-pressed', String(!showingPassword));
       };
     }
   } else if (html && page.setup) {
@@ -1615,7 +1640,26 @@ const startApplication = async () => {
 
   // Sidebar buttons (only exist on logged-in pages)
   const menuButton = select('#menuButton');
-  if (menuButton) menuButton.onclick = () => select('#sidebar').classList.toggle('open');
+  const sidebar = select('#sidebar');
+  const sidebarBackdrop = select('#sidebarBackdrop');
+  const closeSidebar = () => {
+    if (sidebar) sidebar.classList.remove('open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('open');
+    if (menuButton) {
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Open navigation');
+    }
+  };
+  if (menuButton) menuButton.onclick = () => {
+    const isOpen = sidebar.classList.toggle('open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.toggle('open', isOpen);
+    menuButton.setAttribute('aria-expanded', String(isOpen));
+    menuButton.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+  };
+  if (sidebarBackdrop) sidebarBackdrop.onclick = closeSidebar;
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeSidebar();
+  });
   const sidebarLogout = select('#sidebarLogout');
   if (sidebarLogout) sidebarLogout.onclick = event => { event.preventDefault(); confirmLogout(); };
 

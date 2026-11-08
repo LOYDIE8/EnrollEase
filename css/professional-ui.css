@@ -1,0 +1,1148 @@
+:root {
+  color-scheme: light;
+  --ui-ink: #15243b;
+  --ui-muted: #607087;
+  --ui-line: #dce5ef;
+  --ui-canvas: #f4f7fb;
+  --ui-surface: #fff;
+  --ui-navy: #102b4e;
+  --ui-blue: #1768b2;
+  --ui-blue-dark: #10538f;
+  --ui-blue-soft: #eaf3fb;
+  --ui-shadow: 0 18px 50px rgb(16 43 78 / 10%);
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.public-home {
+  color: var(--ui-ink);
+  background: var(--ui-canvas);
+}
+
+.public-home .page {
+  width: 100%;
+  max-width: 1320px;
+  padding: 16px 36px 64px;
+  overflow: visible;
+}
+
+.public-home .navbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  width: min(1248px, calc(100% - 48px));
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 18px;
+  transform: translateX(-50%);
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 16px;
+  background: rgb(13 35 62 / 72%);
+  box-shadow: 0 10px 34px rgb(0 0 0 / 20%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.public-home .brand {
+  gap: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.public-home .brand-icon {
+  width: 34px;
+  height: 30px;
+  color: #a9d2f1;
+}
+
+.public-home .nav-links {
+  gap: clamp(12px, 2vw, 25px);
+}
+
+.public-home .nav-links a {
+  color: rgb(255 255 255 / 82%);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.public-home .nav-links a:hover,
+.public-home .nav-links a.active {
+  color: #fff;
+}
+
+.public-home .nav-links a.active::after {
+  bottom: -3px;
+  background: #a9d2f1;
+}
+
+.public-home .nav-actions {
+  gap: 7px;
+}
+
+.public-home .navbar .button {
+  height: 38px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.public-home .button-login {
+  border-color: rgb(255 255 255 / 38%);
+  color: #fff;
+  background: rgb(255 255 255 / 9%);
+}
+
+.public-home .button-login:hover {
+  border-color: rgb(255 255 255 / 60%);
+  background: rgb(255 255 255 / 18%);
+}
+
+.public-home .button-register,
+.public-home .button-primary {
+  border-color: var(--ui-blue);
+  color: #fff;
+  background: var(--ui-blue);
+  box-shadow: 0 7px 18px rgb(23 104 178 / 22%);
+}
+
+.public-home .button-register:hover,
+.public-home .button-primary:hover {
+  border-color: var(--ui-blue-dark);
+  background: var(--ui-blue-dark);
+}
+
+.public-home .hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: min(720px, 88vh);
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  align-items: center;
+  gap: 52px;
+  margin: 0 calc((100% - 100vw) / 2);
+  padding: 150px max(8%, calc((100vw - 1200px) / 2)) 74px;
+  overflow: hidden;
+  color: #fff;
+  background:
+    linear-gradient(90deg, rgb(9 29 54 / 92%) 0%, rgb(10 37 67 / 78%) 48%, rgb(10 37 67 / 48%) 100%),
+    url("../img/bg.png") center 42% / cover no-repeat,
+    var(--ui-navy);
+}
+
+.public-home .hero::after {
+  position: absolute;
+  z-index: -1;
+  right: -120px;
+  bottom: -230px;
+  width: 600px;
+  height: 600px;
+  border: 1px solid rgb(255 255 255 / 13%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 50px rgb(255 255 255 / 4%), 0 0 0 110px rgb(255 255 255 / 3%);
+  content: "";
+}
+
+.public-home .hero-copy {
+  max-width: 610px;
+}
+
+.public-home .eyebrow {
+  margin: 0 0 16px;
+  color: #a9d2f1;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1.8px;
+}
+
+.public-home .hero h1 {
+  margin: 0 0 18px;
+  color: #fff;
+  font-size: clamp(42px, 5.2vw, 68px);
+  font-weight: 760;
+  letter-spacing: -2.4px;
+  line-height: 1.04;
+}
+
+.public-home .description {
+  max-width: 540px;
+  margin: 0;
+  color: rgb(238 245 252 / 86%);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.public-home .hero-buttons {
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.public-home .hero-buttons .button {
+  height: 48px;
+  padding: 0 21px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.public-home .button-secondary {
+  border-color: rgb(255 255 255 / 30%);
+  color: #fff;
+  background: rgb(255 255 255 / 8%);
+}
+
+.public-home .button-secondary:hover {
+  background: rgb(255 255 255 / 16%);
+}
+
+.public-home .hero-cards {
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.public-home .enrollment-card,
+.public-home .schedule-card {
+  border: 1px solid rgb(255 255 255 / 20%);
+  background: rgb(10 31 56 / 62%);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 17%);
+  backdrop-filter: blur(14px);
+}
+
+.public-home .enrollment-card {
+  width: min(100%, 370px);
+  min-height: 112px;
+  padding: 22px;
+  border-radius: 16px;
+}
+
+.public-home .calendar-icon {
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--ui-blue);
+  box-shadow: none;
+}
+
+.public-home .date-copy p {
+  color: #c5d5e6;
+  font-size: 12px;
+}
+
+.public-home .date-copy h2 {
+  color: #fff;
+  font-size: 17px;
+}
+
+.public-home .schedule-card {
+  width: min(100%, 285px);
+  min-height: 64px;
+  padding: 13px 17px;
+  border-radius: 13px;
+}
+
+.public-home .check-circle {
+  background: #1d9a73;
+}
+
+.public-home .schedule-card p {
+  color: #e8f0f8;
+}
+
+.public-home .content-section {
+  min-height: 0;
+  margin: 34px 0 0;
+  padding: clamp(34px, 5vw, 64px) clamp(20px, 4vw, 52px);
+  border: 1px solid var(--ui-line);
+  border-radius: 20px;
+  color: var(--ui-ink);
+  background: var(--ui-surface);
+  box-shadow: 0 8px 26px rgb(16 43 78 / 5%);
+  backdrop-filter: none;
+}
+
+.public-home .section-heading {
+  margin-bottom: 34px;
+}
+
+.public-home .section-heading h2 {
+  margin-bottom: 8px;
+  color: var(--ui-navy);
+  font-family: inherit;
+  font-size: clamp(27px, 3vw, 36px);
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+
+.public-home .section-heading > p:not(.section-kicker) {
+  color: var(--ui-muted);
+  font-size: 14px;
+}
+
+.public-home .heading-line {
+  width: 42px;
+  height: 3px;
+  margin-top: 15px;
+  background: var(--ui-blue);
+  box-shadow: none;
+}
+
+.public-home .steps-grid,
+.public-home .features-grid {
+  gap: 16px;
+}
+
+.public-home .info-card {
+  min-height: 270px;
+  padding: 32px 20px 22px;
+  border: 1px solid var(--ui-line);
+  border-radius: 14px;
+  color: var(--ui-ink);
+  background: #fff;
+  box-shadow: 0 4px 14px rgb(16 43 78 / 4%);
+  backdrop-filter: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.public-home .info-card:hover {
+  transform: translateY(-3px);
+  border-color: #b8d2e8;
+  background: #fff;
+  box-shadow: 0 12px 25px rgb(16 43 78 / 9%);
+}
+
+.public-home .step-number {
+  top: 12px;
+  left: 13px;
+  width: 33px;
+  height: 29px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ui-blue);
+  background: var(--ui-blue-soft);
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.public-home .section-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 14px;
+  border: 0;
+  border-radius: 15px;
+  color: var(--ui-blue);
+  background: var(--ui-blue-soft);
+  box-shadow: none;
+}
+
+.public-home .section-icon::before {
+  display: none;
+}
+
+.public-home .section-icon svg {
+  width: 31px;
+  height: 31px;
+  filter: none;
+}
+
+.public-home .info-card h3 {
+  margin-bottom: 8px;
+  color: var(--ui-navy);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.public-home .info-card p {
+  color: var(--ui-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.public-home .arrow-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  color: var(--ui-blue);
+  background: var(--ui-blue-soft);
+  box-shadow: none;
+}
+
+.public-home .arrow-btn:hover {
+  transform: translateX(2px);
+  color: #fff;
+  background: var(--ui-blue);
+  box-shadow: none;
+}
+
+.public-home .feature-card {
+  min-height: 205px;
+  padding: 23px 18px;
+}
+
+.public-home .feature-card .section-icon {
+  width: 52px;
+  height: 52px;
+}
+
+.public-home .contact-panel {
+  width: 100%;
+  height: auto;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 28px;
+  border: 1px solid var(--ui-line);
+  border-radius: 16px;
+  color: var(--ui-ink);
+  background: #f8fafc;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.public-home .contact-info h3,
+.public-home .contact-form h3 {
+  color: var(--ui-navy);
+  font-size: 22px;
+}
+
+.public-home .contact-description,
+.public-home .contact-detail p {
+  color: var(--ui-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.public-home .admin-access-link {
+  margin: 18px 0 0;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+
+.public-home .admin-access-link a {
+  color: var(--ui-blue);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.public-home .admin-access-link a:hover {
+  color: var(--ui-blue-dark);
+  text-decoration: underline;
+}
+
+.public-home .contact-detail h4 {
+  color: var(--ui-navy);
+}
+
+.public-home .contact-icon {
+  border: 0;
+  border-radius: 12px;
+  color: var(--ui-blue);
+  background: var(--ui-blue-soft);
+  box-shadow: none;
+}
+
+.student-login,
+.student-register {
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ui-ink);
+  background-color: var(--ui-canvas);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: inherit;
+}
+
+.student-login {
+  background-image:
+    linear-gradient(135deg, rgb(255 255 255 / 5%), rgb(8 28 49 / 8%)),
+    url("../img/login%20bg.png");
+}
+
+.student-register {
+  background-image:
+    linear-gradient(135deg, rgb(255 255 255 / 5%), rgb(8 28 49 / 8%)),
+    url("../img/registerbg.png");
+}
+
+.student-login .login-page {
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
+}
+
+.student-login .navbar {
+  width: min(1180px, calc(100% - 48px));
+  height: 66px;
+  margin: 16px auto 0;
+  padding: 0;
+}
+
+.student-login .logo {
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(9 31 54 / 55%);
+  font-size: 15px;
+}
+
+.student-login .logo i {
+  color: #fff;
+  font-size: 25px;
+}
+
+.student-login .register {
+  gap: 12px;
+  padding-right: 0;
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(9 31 54 / 55%);
+  font-size: 12px;
+}
+
+.student-login .register-btn {
+  width: auto;
+  height: 38px;
+  padding: 0 15px;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 9px;
+  color: #fff;
+  background: rgb(255 255 255 / 12%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.student-login .register-btn:hover {
+  background: rgb(255 255 255 / 24%);
+}
+
+.student-login .main-content {
+  display: grid;
+  width: min(1060px, calc(100% - 48px));
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
+  align-items: center;
+  gap: clamp(40px, 8vw, 100px);
+  margin: clamp(52px, 9vh, 100px) auto 64px;
+}
+
+.student-login .welcome {
+  width: 100%;
+  transform: none;
+}
+
+.student-login .welcome h1,
+.student-login .welcome h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(36px, 4vw, 50px);
+  font-weight: 750;
+  letter-spacing: -1.6px;
+  line-height: 1.08;
+  text-shadow: 0 2px 14px rgb(8 28 49 / 70%);
+  white-space: normal;
+}
+
+.student-login .welcome h2 {
+  margin-bottom: 22px;
+  color: #fff;
+  -webkit-text-stroke: 0;
+}
+
+.student-login .welcome p {
+  max-width: 410px;
+  margin: 11px 0 0;
+  color: rgb(255 255 255 / 96%);
+  font-size: 14px;
+  line-height: 1.75;
+  text-shadow: 0 1px 8px rgb(8 28 49 / 68%);
+}
+
+.student-login .glass-card {
+  width: 100%;
+  min-height: 0;
+  padding: 34px;
+  transform: none;
+  border: 1px solid rgb(255 255 255 / 62%);
+  border-radius: 18px;
+  color: var(--ui-ink);
+  background: rgb(255 255 255 / 66%);
+  box-shadow: 0 18px 50px rgb(8 28 49 / 24%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.student-login .card-heading h2 {
+  margin-bottom: 7px;
+  color: var(--ui-navy);
+  font-size: 23px;
+  letter-spacing: -0.5px;
+}
+
+.student-login .card-heading p {
+  margin-bottom: 22px;
+  color: var(--ui-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.student-login .field-group {
+  margin-bottom: 17px;
+}
+
+.student-login .field-group label {
+  margin: 0 0 7px;
+  color: #3e5068;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.student-login .input-box {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 9px;
+  background: #fbfcfe;
+  box-shadow: none;
+}
+
+.student-login .input-box:focus-within {
+  border-color: #76a9d4;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(23 104 178 / 12%);
+}
+
+.student-login .input-box > i {
+  color: #7a8aa0;
+  font-size: 14px;
+}
+
+.student-login .input-box input {
+  color: var(--ui-ink);
+  font-size: 13px;
+}
+
+.student-login .input-box input::placeholder {
+  color: #91a0b2;
+}
+
+.student-login .input-box .eye-icon {
+  color: #718198;
+}
+
+.student-login .error,
+.student-login .err {
+  color: #b42332;
+}
+
+.student-login .form-options {
+  margin: 4px 0 19px;
+  color: var(--ui-muted);
+  font-size: 11px;
+}
+
+.student-login .form-options input {
+  accent-color: var(--ui-blue);
+}
+
+.student-login .form-options a,
+.student-login .admin-login-option a {
+  color: var(--ui-blue);
+}
+
+.student-login .login-btn {
+  height: 46px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--ui-blue);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-login .login-btn:hover {
+  background: var(--ui-blue-dark);
+}
+
+.student-login .admin-login-option {
+  color: var(--ui-muted);
+  font-size: 11px;
+}
+
+.student-register .page {
+  min-height: 100vh;
+  justify-content: center;
+  padding: 38px 24px;
+}
+
+.student-register .background-overlay {
+  display: none;
+}
+
+.student-register .register-container {
+  width: min(1080px, 100%);
+  min-height: 0;
+  grid-template-columns: minmax(270px, 0.82fr) minmax(0, 1.5fr);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 26%);
+  box-shadow: 0 20px 55px rgb(16 43 78 / 22%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.student-register .left-panel {
+  padding: 40px 34px;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(155deg, rgb(23 61 102 / 54%), rgb(16 43 78 / 42%) 72%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.student-register .brand {
+  gap: 10px;
+  margin-bottom: 44px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.student-register .graduation-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  color: #fff;
+  background: rgb(255 255 255 / 13%);
+  font-size: 20px;
+}
+
+.student-register .create-account {
+  margin-bottom: 13px;
+  color: #a9d2f1;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.student-register .left-panel h1 {
+  margin-bottom: 29px;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.student-register .feature {
+  gap: 12px;
+  margin-bottom: 19px;
+}
+
+.student-register .feature-icon {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 10px;
+  color: #b9dfff;
+  background: rgb(255 255 255 / 8%);
+  font-size: 16px;
+}
+
+.student-register .feature-text h3 {
+  color: #fff;
+  font-size: 12px;
+}
+
+.student-register .feature-text p {
+  color: #c6d5e4;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.student-register .right-panel {
+  padding: 38px clamp(24px, 4vw, 48px);
+  border: 0;
+  border-radius: 0;
+  background: rgb(255 255 255 / 58%);
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.student-register .form-content h2 {
+  color: var(--ui-navy);
+  font-size: 25px;
+  letter-spacing: -0.6px;
+}
+
+.student-register .form-subtitle {
+  color: var(--ui-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.student-register .form-row {
+  gap: 18px;
+  margin: 19px 0 0;
+}
+
+.student-register .input-group label {
+  margin-bottom: 7px;
+  color: #3e5068;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.student-register .input-group input {
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 9px;
+  outline: 0;
+  color: var(--ui-ink);
+  background: rgb(255 255 255 / 82%);
+  font-size: 13px;
+}
+
+.student-register .input-group input::placeholder {
+  color: #91a0b2;
+}
+
+.student-register .input-group input:focus {
+  border-color: #76a9d4;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(23 104 178 / 12%);
+}
+
+.student-register .password-eye {
+  right: 12px;
+  bottom: 11px;
+  color: #718198;
+  font-size: 13px;
+}
+
+.student-register .create-button {
+  width: 100%;
+  height: 45px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--ui-blue);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-register .create-button:hover {
+  transform: translateY(-1px);
+  background: var(--ui-blue-dark);
+  box-shadow: 0 8px 18px rgb(23 104 178 / 18%);
+}
+
+.student-register .create-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.student-register #registerMessage:not(:empty) {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #f1c8cc;
+  border-radius: 9px;
+  color: #9e2532;
+  background: #fff5f5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.admin-login .login-shell {
+  background:
+    radial-gradient(ellipse at 12% 10%, rgb(219 234 247 / 70%), transparent 34%),
+    var(--ui-canvas);
+}
+
+.admin-login .login-card {
+  border-color: var(--ui-line);
+  border-radius: 18px;
+  box-shadow: var(--ui-shadow);
+}
+
+.admin-login .brand-mark {
+  border-radius: 10px;
+  background: var(--ui-blue);
+}
+
+.admin-login .login-submit {
+  border-radius: 9px;
+  background: var(--ui-blue);
+}
+
+.admin-login .login-submit:hover {
+  background: var(--ui-blue-dark);
+}
+
+@media (max-width: 980px) {
+  .public-home .page {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .public-home .navbar {
+    flex-wrap: wrap;
+    gap: 13px;
+  }
+
+  .public-home .brand {
+    font-size: 12px;
+  }
+
+  .public-home .nav-links {
+    order: 3;
+    flex: 0 0 100%;
+    gap: 12px;
+    justify-content: center;
+    margin: 0;
+    padding-top: 8px;
+    overflow: visible;
+    border-top: 1px solid rgb(255 255 255 / 20%);
+  }
+
+  .public-home .nav-actions {
+    margin-left: auto;
+  }
+
+  .public-home .navbar .button {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .public-home .hero {
+    gap: 30px;
+  }
+
+  .public-home .steps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .public-home .page {
+    padding: 12px 16px 40px;
+  }
+
+  .public-home .navbar {
+    top: 10px;
+    width: calc(100% - 20px);
+    min-height: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 13px;
+    border-radius: 14px;
+  }
+
+  .public-home .nav-actions {
+    margin-left: auto;
+  }
+
+  .public-home .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0;
+    padding-top: 7px;
+    border-top: 1px solid var(--ui-line);
+  }
+
+  .public-home .hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 34px;
+    margin-right: -16px;
+    margin-left: -16px;
+    padding: 160px 24px 48px;
+  }
+
+  .public-home .hero-copy {
+    max-width: 620px;
+  }
+
+  .public-home .hero h1 {
+    font-size: clamp(40px, 10vw, 56px);
+  }
+
+  .public-home .description {
+    font-size: 14px;
+  }
+
+  .public-home .hero-cards {
+    align-items: flex-start;
+  }
+
+  .public-home .schedule-card {
+    align-self: flex-start;
+  }
+
+  .public-home .content-section {
+    margin-top: 18px;
+    padding: 34px 20px;
+    border-radius: 16px;
+  }
+
+  .public-home .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .public-home .contact-panel {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 22px;
+  }
+
+  .student-login .navbar {
+    width: calc(100% - 36px);
+    margin-top: 10px;
+  }
+
+  .student-login .main-content {
+    width: min(540px, calc(100% - 32px));
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-top: 44px;
+  }
+
+  .student-login .welcome {
+    text-align: center;
+  }
+
+  .student-login .welcome p {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .student-login .welcome br {
+    display: none;
+  }
+
+  .student-login .glass-card {
+    padding: 28px 24px;
+  }
+
+  .student-register .register-container {
+    grid-template-columns: 1fr;
+  }
+
+  .student-register .left-panel {
+    padding: 25px 28px;
+  }
+
+  .student-register .brand {
+    margin-bottom: 22px;
+  }
+
+  .student-register .left-panel h1 {
+    margin-bottom: 20px;
+    font-size: 21px;
+  }
+
+  .student-register .feature:nth-of-type(n + 6) {
+    display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .public-home .brand span {
+    max-width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .public-home .nav-actions .button {
+    height: 34px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+
+  .public-home .hero-buttons {
+    align-items: stretch;
+  }
+
+  .public-home .hero-buttons .button {
+    flex: 1;
+    min-width: 0;
+    padding: 0 13px;
+    font-size: 12px;
+  }
+
+  .public-home .steps-grid,
+  .public-home .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-home .info-card {
+    min-height: 220px;
+  }
+
+  .student-login .navbar {
+    height: 54px;
+  }
+
+  .student-login .logo {
+    font-size: 12px;
+  }
+
+  .student-login .logo i {
+    font-size: 20px;
+  }
+
+  .student-login .register {
+    gap: 7px;
+    font-size: 10px;
+  }
+
+  .student-login .register-btn {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .student-login .main-content {
+    margin-top: 30px;
+  }
+
+  .student-login .welcome h1,
+  .student-login .welcome h2 {
+    font-size: 34px;
+  }
+
+  .student-register .page {
+    padding: 16px 12px;
+  }
+
+  .student-register .left-panel {
+    padding: 22px;
+  }
+
+  .student-register .right-panel {
+    padding: 27px 22px;
+  }
+
+  .student-register .form-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

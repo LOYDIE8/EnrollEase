@@ -1,7 +1,7 @@
 -- Migration: Create enrolled_student_registry table and default system setting
 CREATE TABLE IF NOT EXISTS `enrolled_student_registry` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `student_number` VARCHAR(7) NOT NULL,
+  `student_number` VARCHAR(12) NOT NULL,
   `last_name` VARCHAR(100) NOT NULL,
   `program` VARCHAR(150) NOT NULL,
   `year_level` VARCHAR(40) NOT NULL,

@@ -1,28 +1,25 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTU Daanbantayan Campus Enrollment System | Register</title>
+    <title>EnrollEase | Register</title>
 
     <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="css/professional-ui.css?v=auth-glass-20261108">
 
-    <!-- Icons -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
-<body>
+<body class="student-register">
 
     <div class="page">
 
-        <!-- Background Overlay -->
         <div class="background-overlay"></div>
 
-        <!-- Main Container -->
         <div class="register-container">
 
-            <!-- ================= LEFT PANEL ================= -->
             <div class="left-panel">
 
                 <div class="brand">
@@ -30,7 +27,7 @@
                         <i class="fa-solid fa-graduation-cap"></i>
                     </div>
 
-                    <span>CTU Daanbantayan Campus Enrollment System</span>
+                    <span>EnrollEase</span>
                 </div>
 
                 <div class="create-account">
@@ -41,7 +38,7 @@
                 Cebu Technological University<br>
                 Daanbantayan Campus
                 </h1>
-           
+
                 <div class="feature">
                     <div class="feature-icon">
                         <i class="fa-regular fa-calendar-days"></i>
@@ -53,7 +50,6 @@
                     </div>
                 </div>
 
-                <!-- Feature 2 -->
                 <div class="feature">
                     <div class="feature-icon">
                         <i class="fa-regular fa-clock"></i>
@@ -65,7 +61,6 @@
                     </div>
                 </div>
 
-                <!-- Feature 3 -->
                 <div class="feature">
                     <div class="feature-icon">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -77,7 +72,6 @@
                     </div>
                 </div>
 
-                <!-- Feature 4 -->
                 <div class="feature">
                     <div class="feature-icon">
                         <i class="fa-solid fa-table-cells-large"></i>
@@ -86,14 +80,12 @@
                     <div class="feature-text">
                         <h3>A More Organized</h3>
                         <h3>Enrollment Process</h3>
-                        <p>Less waiting , more convenience.</p>
+                        <p>Less waiting, more convenience.</p>
                     </div>
                 </div>
 
             </div>
 
-
-            <!-- ================= RIGHT PANEL ================= -->
             <div class="right-panel">
 
                 <div class="form-content">
@@ -106,94 +98,51 @@
 
                     <form id="registerForm" novalidate>
 
-                        <!-- Row 1 -->
-                        <div class="form-row">
-
-                            <div class="input-group">
-                                <label for="regStudentId">Student ID *</label>
-                                <input id="regStudentId" name="studentId" type="text" inputmode="numeric" pattern="824[0-9]{4}" maxlength="7" placeholder="8240001" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="regProgram">Program *</label>
-                                <input id="regProgram" name="program" type="text" maxlength="150" required>
-                            </div>
-
-                        </div>
-
-
-                        <!-- Row 2 -->
-                        <div class="form-row">
-
-                            <div class="input-group">
-                                <label for="regFirstName">First Name *</label>
-                                <input id="regFirstName" name="firstName" type="text" maxlength="100" autocomplete="given-name" required>
-                            </div>
-
-                            <div class="input-group">
-                                <label for="regMiddleName">Middle Name</label>
-                                <input id="regMiddleName" name="middleName" type="text" maxlength="100">
-                            </div>
-
-                        </div>
-
                         <div class="form-row">
                             <div class="input-group">
-                                <label for="regLastName">Last Name *</label>
-                                <input id="regLastName" name="lastName" type="text" maxlength="100" autocomplete="family-name" required>
+                                <label for="regFullName">Full Name *</label>
+                                <input id="regFullName" name="fullName" type="text" maxlength="302" autocomplete="name" required>
                             </div>
                             <div class="input-group">
-                                <label for="regYearLevel">Year Level *</label>
-                                <select id="regYearLevel" name="yearLevel" required>
-                                    <option value="">Select Year Level</option>
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year">2nd Year</option>
-                                    <option value="3rd Year">3rd Year</option>
-                                    <option value="4th Year">4th Year</option>
-                                </select>
+                                <label for="regStudentId">Student ID Number / LRN *</label>
+                                <input id="regStudentId" name="studentId" type="text" inputmode="numeric" pattern="(824[0-9]{4}|[0-9]{12})" maxlength="12" placeholder="8240001 or 12-digit LRN" required>
                             </div>
-
                         </div>
 
-                        <!-- Row 3 -->
                         <div class="form-row">
                             <div class="input-group">
                                 <label for="regEmail">Email Address *</label>
                                 <input id="regEmail" name="email" type="email" autocomplete="email" maxlength="190" required>
                             </div>
                             <div class="input-group">
-                                <label for="regPhone">Contact Number *</label>
+                                <label for="regPhone">Phone Number *</label>
                                 <input id="regPhone" name="phone" type="tel" autocomplete="tel" pattern="[\d\s()+-]{7,32}" maxlength="32" required>
                             </div>
                         </div>
 
                         <div class="form-row">
-                            <div class="input-group campus-group">
-                                <label>Campus</label>
-                                <div class="campus-display">Daanbantayan Campus</div>
-                            </div>
                             <div class="input-group password-group">
                                 <label for="regPassword">Password *</label>
                                 <input id="regPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
-                                <i class="fa-solid fa-eye password-eye"></i>
+                                <button class="password-eye" type="button" data-password-toggle="regPassword" aria-label="Show password" aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
                             </div>
                             <div class="input-group password-group">
                                 <label for="regConfirmPassword">Confirm Password *</label>
                                 <input id="regConfirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
-                                <i class="fa-solid fa-eye password-eye"></i>
+                                <button class="password-eye" type="button" data-password-toggle="regConfirmPassword" aria-label="Show password" aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
                             </div>
                         </div>
                         <p class="form-hint" style="font-size:12px;color:#718096;margin:4px 0 12px">Password must be 8–72 characters with at least one letter and one number.</p>
-                        <p class="form-subtitle">New accounts are registered for Daanbantayan Campus. Your enrollment week is assigned automatically from your year level.</p>
 
                         <p id="registerMessage" role="alert" aria-live="polite"></p>
 
-                        <!-- Submit -->
                         <button type="submit" class="create-button" id="registerSubmit">
-
                             <span>Create Account</span>
-
                             <i class="fa-solid fa-arrow-right"></i>
-
                         </button>
 
                     </form>

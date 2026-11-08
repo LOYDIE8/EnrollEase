@@ -4,6 +4,28 @@
 
   const message = document.querySelector('#registerMessage');
   const submit = document.querySelector('#registerSubmit');
+
+  document.querySelectorAll('[data-password-toggle]').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const input = document.getElementById(toggle.dataset.passwordToggle);
+      if (!input) return;
+
+      const showingPassword = input.type === 'text';
+      input.type = showingPassword ? 'password' : 'text';
+      toggle.setAttribute('aria-label', showingPassword ? 'Show password' : 'Hide password');
+      toggle.setAttribute('aria-pressed', String(!showingPassword));
+      const icon = toggle.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-eye', showingPassword);
+        icon.classList.toggle('fa-eye-slash', !showingPassword);
+      }
+    });
+  });
+
+  form.addEventListener('input', () => {
+    message.textContent = '';
+  });
+
   form.addEventListener('submit', async event => {
     event.preventDefault();
     message.textContent = '';
@@ -25,13 +47,9 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentId: data.get('studentId'),
-          firstName: data.get('firstName'),
-          middleName: data.get('middleName'),
-          lastName: data.get('lastName'),
+          fullName: data.get('fullName'),
           email: data.get('email'),
           phone: data.get('phone'),
-          program: data.get('program'),
-          yearLevel: data.get('yearLevel'),
           password: data.get('password'),
           confirmPassword: data.get('confirmPassword')
         })

@@ -538,7 +538,7 @@ function h($value): string
 </head>
 <body>
 <div class="app-shell">
-  <aside class="sidebar">
+  <aside class="sidebar" id="adminSidebar">
     <a class="brand" href="../landing.html"><span class="brand-mark">E</span><span class="brand-name">enroll<span>ease</span></span></a>
     <div class="nav-label">Administration</div>
     <nav class="nav-list" aria-label="Admin navigation">
@@ -559,9 +559,13 @@ function h($value): string
       </div>
     </div>
   </aside>
+  <button class="sidebar-overlay" id="adminSidebarOverlay" type="button" aria-label="Close admin navigation"></button>
   <div class="main-column">
     <header class="topbar">
-      <div class="topbar-left"><span class="breadcrumb">Administration /</span><strong><?= h($sections[$section]) ?></strong></div>
+      <div class="topbar-left">
+        <button class="admin-menu-toggle" id="adminMenuButton" type="button" aria-label="Open admin navigation" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+        <span class="breadcrumb">Administration /</span><strong><?= h($sections[$section]) ?></strong>
+      </div>
       <div class="topbar-right">
         <span><?= h($admin['username']) ?></span>
         <form class="logout-form" action="../api/admin/logout.php" method="post">
@@ -660,8 +664,8 @@ function h($value): string
       <?php elseif ($section === 'eligibility-records'): ?>
       <section class="panel" id="student-eligibility-manager" data-csrf="<?= h($_SESSION['admin_csrf_token']) ?>">
         <form class="filter-form" id="eligibility-student-search">
-          <label for="eligibility-student-number">Student number</label>
-          <input id="eligibility-student-number" name="studentNumber" type="text" inputmode="numeric" pattern="824[0-9]{4}" maxlength="7" value="<?= h(isset($_GET['student_number']) && is_string($_GET['student_number']) ? substr(trim($_GET['student_number']), 0, 7) : '') ?>" placeholder="8240000" required>
+          <label for="eligibility-student-number">Student ID / LRN</label>
+          <input id="eligibility-student-number" name="studentNumber" type="text" inputmode="numeric" pattern="(824[0-9]{4}|[0-9]{12})" maxlength="12" value="<?= h(isset($_GET['student_number']) && is_string($_GET['student_number']) ? substr(trim($_GET['student_number']), 0, 12) : '') ?>" placeholder="8240000 or 12-digit LRN" required>
           <button class="button primary" type="submit">Load student</button>
         </form>
         <p id="eligibility-manager-message" role="status" aria-live="polite"></p>
@@ -936,5 +940,6 @@ function h($value): string
 <?php elseif ($section === 'admins' && $canRead): ?>
   <script src="../js/admin-accounts.js" defer></script>
 <?php endif; ?>
+<script src="../js/admin-panel.js" defer></script>
 </body>
 </html>

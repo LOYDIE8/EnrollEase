@@ -51,11 +51,11 @@ BEGIN
 
   IF EXISTS (
     SELECT student_number FROM students
-    WHERE student_number IS NOT NULL AND student_number NOT REGEXP '^824[0-9]{4}$'
+    WHERE student_number IS NOT NULL AND student_number NOT REGEXP '^(824[0-9]{4}|[0-9]{12})$'
     LIMIT 1
   ) THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Correct student numbers to seven digits beginning with 824 before applying this migration.';
+      SET MESSAGE_TEXT = 'Correct student numbers to a seven-digit CTU ID beginning with 824 or a 12-digit LRN before applying this migration.';
   END IF;
 
   IF EXISTS (

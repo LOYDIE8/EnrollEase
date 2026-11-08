@@ -7,7 +7,7 @@ This integrates enrollment appointments into the existing EnrollEase pages and s
 1. Open the XAMPP Control Panel.
 2. Start **Apache** and **MySQL**.
 3. Keep the project under `C:\xampp\htdocs\PC316v2`.
-4. Open `http://localhost/PC316v2/landing.html` and use the site's existing navigation.
+4. Open the URL matching Apache's `Listen` port. This computer's XAMPP is configured for port `8888`, so open `http://localhost:8888/PC316v2/landing.html`. If your Apache uses the default port `80`, open `http://localhost/PC316v2/landing.html`.
 
 The project uses PHP, Apache, and MySQL/MariaDB only; it does not require Node.js.
 
@@ -20,19 +20,21 @@ The project uses PHP, Apache, and MySQL/MariaDB only; it does not require Node.j
 3. Choose `database/schema.sql` and import it. The script creates the `enrollment_system` database, tables, foreign keys, eligibility settings, example schedules, and default appointment times.
 4. Select the `enrollment_system` database, choose **Import**, and import `database/enrollment_system.sql` to add five local test students.
 
-`database/schema.sql` is the canonical full schema. `database/enrollment_system.sql` is only a local test-data fixture; it is not a second schema.
+`database/schema.sql` is the canonical full schema. It accepts both 7-digit CTU student IDs beginning with `824` and 12-digit LRNs. `database/enrollment_system.sql` is only a local test-data fixture; it is not a second schema.
 
 The example schedule dates are November 9–December 4, 2026. They are editable in the shared admin dashboard and are not hard-coded in PHP.
 
 ### Existing installation
 
-Do not import the full schema over an existing database. Back up the database first and confirm existing student IDs are seven digits beginning with `824`, are unique, and have supported year-level values. Then bring the existing database up to date in this order:
+Do not import the full schema over an existing database. Back up the database first and confirm existing student IDs are either 7-digit CTU IDs beginning with `824` or 12-digit LRNs, are unique, and have supported year-level values. Then bring the existing database up to date in this order:
 
 1. Apply `database/enrollment-appointments-migration.sql` if the database does not already have the enrollment appointment schema.
 2. Apply `database/shared-admin-migration.sql` only if the existing admin setup needs that migration.
 3. If the student table is still on the older registration schema, apply `database/migrations/20261106_align_student_registration_schema.sql` after verifying the existing Student IDs.
 4. Import `database/migrations/20261106_daanbantayan_student_management.sql` into the existing database. It assigns existing student records to Daanbantayan Campus and adds student status and the admin audit log without replacing student or appointment records.
-5. Apply `database/migrations/20261106_create_auth_rate_limits.sql` if the database does not already have the rate-limit table.
+5. Apply `database/migrations/20261106_create_enrolled_student_registry.sql` if the registry table does not exist.
+6. Apply `database/migrations/20261108_accept_lrn_student_numbers.sql` to allow 12-digit LRNs alongside the existing CTU IDs.
+7. Apply `database/migrations/20261106_create_auth_rate_limits.sql` if the database does not already have the rate-limit table.
 
 The SQL migrations default to `USE enrollment_system;`. If the existing database has a different name, change the relevant `USE` line and configure `DB_NAME` to the same database. Import migrations through phpMyAdmin's **Import** tab after selecting the intended database. Do not copy production data into the local test fixture.
 
@@ -56,6 +58,8 @@ SetEnv DB_PORT 3306
 ```
 
 Leave `DB_PASSWORD` unset only if the local MySQL `root` account truly has a blank password. Do not use a blank root password on an internet-facing server.
+
+If `config/database.php` is missing, copy `config/database.example.php` to `config/database.php`. The runtime file is intentionally ignored by Git and must exist in the XAMPP-served project directory. Verify the setup by opening `http://localhost:8888/PC316v2/api/student/session.php` (replace `8888` with Apache's configured port); after importing the schema, an unauthenticated request should return JSON saying `Student sign-in is required.` A missing-config PHP warning means the runtime file is absent; a database connection error means the configured host, port, user, password, or database name is incorrect.
 
 ## 4. Install PHPMailer
 
@@ -100,8 +104,8 @@ Follow the prompts for the shared username, email, first name, and last name. Th
 ## 7. Student IDs, year level, and eligibility
 
 - The system is for CTU Daanbantayan Campus. Registration fixes the campus to Daanbantayan Campus; the server does not accept a different campus from the browser.
-- Students enter their seven-digit Student ID during registration. It must start with `824` (for example, `8240000`) and must be unique.
-- Students select `1st Year`, `2nd Year`, `3rd Year`, or `4th Year` during registration. Year level maps to the enrollment week: 1st Year = Week 1, 2nd Year = Week 2, 3rd Year = Week 3, and 4th Year = Week 4.
+- Students enter either a 7-digit CTU Student ID beginning with `824` or a 12-digit LRN during registration; the identifier must be unique.
+- Year level is not collected during registration. An authorized admin must add it before the student can book, because year level maps to the enrollment week: 1st Year = Week 1, 2nd Year = Week 2, 3rd Year = Week 3, and 4th Year = Week 4.
 - The server checks that the current date and the requested appointment date are both within the student's assigned enrollment week. It enforces a maximum of 150 active appointments per day.
 - Authorized admins can view, add, edit, activate, and deactivate student accounts. Changing a student's year level updates the assigned week automatically; student changes are recorded in the admin audit log. Admin access is enforced by backend permissions and department scope.
 - An inactive student, unsupported year level, or unresolved enrollment requirement blocks booking.

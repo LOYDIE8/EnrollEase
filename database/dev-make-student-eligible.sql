@@ -5,7 +5,7 @@ USE enrollment_system;
 
 DROP PROCEDURE IF EXISTS dev_make_student_eligible;
 DELIMITER //
-CREATE PROCEDURE dev_make_student_eligible(IN p_student_number VARCHAR(7))
+CREATE PROCEDURE dev_make_student_eligible(IN p_student_number VARCHAR(12))
 BEGIN
   DECLARE v_student_id BIGINT UNSIGNED DEFAULT NULL;
   DECLARE v_locked_student_id BIGINT UNSIGNED DEFAULT NULL;
@@ -17,9 +17,9 @@ BEGIN
     RESIGNAL;
   END;
 
-  IF p_student_number IS NULL OR p_student_number NOT REGEXP '^824[0-9]{4}$' THEN
+  IF p_student_number IS NULL OR p_student_number NOT REGEXP '^(824[0-9]{4}|[0-9]{12})$' THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Enter a seven-digit local student number beginning with 824.';
+      SET MESSAGE_TEXT = 'Enter a seven-digit CTU student number beginning with 824 or a 12-digit LRN.';
   END IF;
 
   START TRANSACTION;

@@ -8,10 +8,10 @@ BEGIN
     SELECT 1
     FROM students
     WHERE student_number IS NOT NULL
-      AND student_number NOT REGEXP '^824[0-9]{4}$'
+      AND student_number NOT REGEXP '^(824[0-9]{4}|[0-9]{12})$'
   ) THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Existing student_number values must be seven-digit IDs beginning with 824 before this migration.';
+      SET MESSAGE_TEXT = 'Existing student_number values must be a seven-digit CTU ID beginning with 824 or a 12-digit LRN before this migration.';
   END IF;
 
   IF EXISTS (
@@ -36,7 +36,7 @@ BEGIN
   END IF;
 
   ALTER TABLE students
-    MODIFY student_number VARCHAR(7) NULL,
+    MODIFY student_number VARCHAR(12) NULL,
     MODIFY year_level VARCHAR(40) NULL,
     MODIFY academic_status ENUM(
       'applicant', 'active', 'inactive', 'graduated', 'dropped',

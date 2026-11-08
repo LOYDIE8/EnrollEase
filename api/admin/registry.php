@@ -153,11 +153,11 @@ try {
             $program = trim((string)($row[$headerMap['program']] ?? ''));
             $yearLevel = trim((string)($row[$headerMap['year_level']] ?? ''));
 
-            if (!preg_match('/\A824[0-9]{4}\z/', $studentNumber)) {
+            if (!preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', $studentNumber)) {
                 $rejected[] = [
                     'row' => $rowNum,
                     'student_number' => $studentNumber,
-                    'reason' => 'Invalid student ID (must be 7 digits starting with 824)',
+                    'reason' => 'Invalid student ID (must be a 7-digit CTU ID starting with 824 or a 12-digit LRN)',
                 ];
                 continue;
             }

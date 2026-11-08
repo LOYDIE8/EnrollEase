@@ -49,11 +49,11 @@ try {
             'message' => 'Your student account is currently inactive. Please contact the registrar.',
         ], 403);
     }
-    if (!preg_match('/\A824[0-9]{4}\z/', (string)$lockedStudent['student_number'])) {
+    if (!preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', (string)$lockedStudent['student_number'])) {
         $database->rollBack();
         student_json_response([
             'success' => false,
-            'message' => 'Invalid Student ID. Please enter a valid CTU Daanbantayan Campus Student ID.',
+            'message' => 'Enter a 7-digit CTU Student ID beginning with 824 or a 12-digit LRN.',
         ], 403);
     }
     $profile['year_level'] = $lockedStudent['year_level'];

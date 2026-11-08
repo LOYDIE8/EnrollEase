@@ -65,7 +65,7 @@
       <form id="student-editor" class="student-editor" novalidate>
         <h2>${editing ? 'Edit Student' : 'Add Student'}</h2>
         <p class="panel-caption">Campus: Daanbantayan Campus</p>
-        ${field('studentId', 'Student ID', 'text', true, '7')}
+        ${field('studentId', 'Student ID / LRN', 'text', true, '12')}
         ${field('firstName', 'First Name', 'text', true, '100')}
         ${field('middleName', 'Middle Name', 'text', false, '100')}
         ${field('lastName', 'Last Name', 'text', true, '100')}

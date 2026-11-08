@@ -308,7 +308,7 @@ function h($value): string
 </head>
 <body>
 <div class="app-shell">
-  <aside class="sidebar">
+  <aside class="sidebar" id="adminSidebar">
     <a class="brand" href="../landing.html"><span class="brand-mark">E</span><span class="brand-name">enroll<span>ease</span></span></a>
     <div class="nav-label">Administration</div>
     <nav class="nav-list" aria-label="Admin navigation">
@@ -322,9 +322,13 @@ function h($value): string
     </nav>
     <div class="sidebar-bottom"><div class="role-card"><small>Shared administrator</small><strong><?= h($admin['name']) ?></strong><span class="role-badge">Administrator</span></div></div>
   </aside>
+  <button class="sidebar-overlay" id="adminSidebarOverlay" type="button" aria-label="Close admin navigation"></button>
   <div class="main-column">
     <header class="topbar">
-      <div class="topbar-left"><span class="breadcrumb">Administration /</span><strong>Schedules and capacity</strong></div>
+      <div class="topbar-left">
+        <button class="admin-menu-toggle" id="adminMenuButton" type="button" aria-label="Open admin navigation" aria-controls="adminSidebar" aria-expanded="false">☰</button>
+        <span class="breadcrumb">Administration /</span><strong>Schedules and capacity</strong>
+      </div>
       <div class="topbar-right">
         <span><?= h($admin['username']) ?></span>
         <form class="logout-form" action="../api/admin/logout.php" method="post">
@@ -442,5 +446,6 @@ function h($value): string
     </main>
   </div>
 </div>
+<script src="../js/admin-panel.js" defer></script>
 </body>
 </html>

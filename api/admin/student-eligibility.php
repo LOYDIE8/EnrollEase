@@ -19,8 +19,8 @@ try {
 
     if ($method === 'GET') {
         $studentNumber = trim(is_string($_GET['studentNumber'] ?? null) ? $_GET['studentNumber'] : '');
-        if (!preg_match('/\A824[0-9]{4}\z/', $studentNumber)) {
-            admin_json_response(['success' => false, 'message' => 'Enter a seven-digit student number beginning with 824.'], 400);
+        if (!preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', $studentNumber)) {
+            admin_json_response(['success' => false, 'message' => 'Enter a 7-digit CTU Student ID beginning with 824 or a 12-digit LRN.'], 400);
         }
 
         $record = admin_student_eligibility_record($database, $studentNumber);
@@ -34,8 +34,8 @@ try {
     $request = read_json_request();
     verify_csrf_token($request['csrf_token'] ?? null);
     $studentNumber = trim(is_string($request['studentNumber'] ?? null) ? $request['studentNumber'] : '');
-    if (!preg_match('/\A824[0-9]{4}\z/', $studentNumber)) {
-        admin_json_response(['success' => false, 'message' => 'Enter a seven-digit student number beginning with 824.'], 400);
+    if (!preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', $studentNumber)) {
+        admin_json_response(['success' => false, 'message' => 'Enter a 7-digit CTU Student ID beginning with 824 or a 12-digit LRN.'], 400);
     }
 
     $yearLevelInput = array_key_exists('yearLevel', $request) ? $request['yearLevel'] : null;

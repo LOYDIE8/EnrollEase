@@ -8,16 +8,17 @@ student_verify_origin();
 $request = student_read_json();
 
 $studentNumber = trim(is_string($request['studentId'] ?? null) ? $request['studentId'] : '');
-$firstName = trim(is_string($request['firstName'] ?? null) ? $request['firstName'] : '');
-$middleName = trim(is_string($request['middleName'] ?? null) ? $request['middleName'] : '');
-$lastName = trim(is_string($request['lastName'] ?? null) ? $request['lastName'] : '');
+$fullName = trim(is_string($request['fullName'] ?? null) ? $request['fullName'] : '');
+$nameParts = preg_split('/\s+/u', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+$firstName = array_shift($nameParts) ?? '';
+$lastName = array_pop($nameParts) ?? '';
+$middleName = implode(' ', $nameParts);
 $email = strtolower(trim(is_string($request['email'] ?? null) ? $request['email'] : ''));
 $phone = trim(is_string($request['phone'] ?? null) ? $request['phone'] : '');
-$program = trim(is_string($request['program'] ?? null) ? $request['program'] : '');
-$yearLevel = $request['yearLevel'] ?? null;
+$program = 'Not provided';
+$yearLevel = null;
 $password = $request['password'] ?? null;
 $confirmPassword = $request['confirmPassword'] ?? null;
-$yearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 if (
     (array_key_exists('campus', $request) && $request['campus'] !== 'Daanbantayan Campus') ||
@@ -26,10 +27,10 @@ if (
 ) {
     student_campus_access_denied();
 }
-if (!preg_match('/\A824[0-9]{4}\z/', $studentNumber)) {
+if (!preg_match('/\A(?:824[0-9]{4}|[0-9]{12})\z/', $studentNumber)) {
     student_json_response([
         'success' => false,
-        'message' => 'Invalid Student ID. Please enter a valid CTU Daanbantayan Campus Student ID.',
+        'message' => 'Enter a 7-digit CTU Student ID beginning with 824 or a 12-digit LRN.',
     ], 400);
 }
 if (
@@ -37,15 +38,9 @@ if (
     strlen($middleName) > 100 ||
     $lastName === '' || strlen($lastName) > 100 ||
     !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190 ||
-    !preg_match('/\A[\d\s()+-]{7,32}\z/', $phone) ||
-    $program === '' || strlen($program) > 150
+    !preg_match('/\A[\d\s()+-]{7,32}\z/', $phone)
 ) {
-    student_json_response(['success' => false, 'message' => 'Complete all required student details with valid values.'], 400);
-}
-$canonicalYearLevel = is_string($yearLevel) ? normalize_year_level($yearLevel) : null;
-$yearLevel = $canonicalYearLevel;
-if (!$canonicalYearLevel) {
-    student_json_response(['success' => false, 'message' => 'Please select a valid year level.'], 400);
+    student_json_response(['success' => false, 'message' => 'Enter a full name, valid email address, and valid phone number.'], 400);
 }
 if (
     !is_string($password) || strlen($password) < 8 || strlen($password) > 72 ||
@@ -92,7 +87,7 @@ try {
         if ($regLastName === false || strcasecmp(trim((string)$regLastName), trim($lastName)) !== 0) {
             student_json_response([
                 'success' => false,
-                'message' => 'Student ID and last name do not match the official enrolled student registry. Please contact the registrar.',
+                'message' => 'Student ID/LRN and last name do not match the official enrolled student registry. Please contact the registrar.',
             ], 422);
         }
     }
