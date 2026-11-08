@@ -47,6 +47,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentId: data.get('studentId'),
+          program: data.get('program'),
+          yearLevel: data.get('yearLevel'),
           fullName: data.get('fullName'),
           email: data.get('email'),
           phone: data.get('phone'),

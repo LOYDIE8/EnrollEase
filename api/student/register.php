@@ -15,8 +15,8 @@ $lastName = array_pop($nameParts) ?? '';
 $middleName = implode(' ', $nameParts);
 $email = strtolower(trim(is_string($request['email'] ?? null) ? $request['email'] : ''));
 $phone = trim(is_string($request['phone'] ?? null) ? $request['phone'] : '');
-$program = 'Not provided';
-$yearLevel = null;
+$program = trim(is_string($request['program'] ?? null) ? $request['program'] : '');
+$yearLevel = trim(is_string($request['yearLevel'] ?? null) ? $request['yearLevel'] : '');
 $password = $request['password'] ?? null;
 $confirmPassword = $request['confirmPassword'] ?? null;
 
@@ -91,6 +91,23 @@ try {
             ], 422);
         }
     }
+
+    $regRecordStmt = $database->prepare('SELECT program, year_level FROM enrolled_student_registry WHERE student_number = ? LIMIT 1');
+    $regRecordStmt->execute([$studentNumber]);
+    $regRecord = $regRecordStmt->fetch();
+    if ($regRecord) {
+        if (!empty($regRecord['program'])) {
+            $program = $regRecord['program'];
+        }
+        if (!empty($regRecord['year_level'])) {
+            $yearLevel = $regRecord['year_level'];
+        }
+    }
+    if ($program === '' || $program === 'Not provided') {
+        $program = 'BSIT';
+    }
+    $canonicalYearLevel = normalize_year_level($yearLevel);
+    $yearLevel = $canonicalYearLevel ?: 'First Year';
 
     $campusQuery = $database->prepare(
         'SELECT campus_id FROM campuses WHERE campus_name = ? LIMIT 1'

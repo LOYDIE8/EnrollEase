@@ -796,7 +796,8 @@
   font-weight: 650;
 }
 
-.student-register .input-group input {
+.student-register .input-group input,
+.student-register .input-group select {
   height: 43px;
   padding: 0 12px;
   border: 1px solid var(--ui-line);
@@ -811,7 +812,8 @@
   color: #91a0b2;
 }
 
-.student-register .input-group input:focus {
+.student-register .input-group input:focus,
+.student-register .input-group select:focus {
   border-color: #76a9d4;
   background: #fff;
   box-shadow: 0 0 0 3px rgb(23 104 178 / 12%);

@@ -44,7 +44,7 @@ BEGIN
     AND CONSTRAINT_TYPE = 'CHECK';
 
   IF number_check_exists > 0 THEN
-    ALTER TABLE students DROP CHECK chk_students_number_format;
+    ALTER TABLE students DROP CONSTRAINT chk_students_number_format;
   END IF;
 
   ALTER TABLE students
