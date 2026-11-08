@@ -1102,12 +1102,12 @@ PAGES.enrollment = {
         <p class="muted" style="font-size: 14px;">Review your current academic standing, prerequisite clearances, and enrollment booking qualification.</p>
       </div>
 
-      <div id="enrollmentEligibilityBanner" class="card" style="margin-bottom: 24px; padding: 20px; transition: all 0.2s ease;">
+      <div id="enrollmentEligibilityBanner" class="card enrollment-eligibility-banner is-loading" style="margin-bottom: 24px; padding: 20px; transition: all 0.2s ease;">
         <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="font-size: 24px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; color: #0284c7;">⌛</div>
+          <div class="eligibility-banner-icon loading-icon" style="font-size: 24px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;">⌛</div>
           <div>
-            <h2 style="font-size: 18px; margin: 0 0 4px; font-weight: 600;">Checking enrollment eligibility...</h2>
-            <p class="muted" style="margin: 0; font-size: 13px;">Verifying academic records, financials, documents, holds, and schedule window...</p>
+            <h2 class="eligibility-banner-title" style="font-size: 18px; margin: 0 0 4px; font-weight: 600;">Checking enrollment eligibility...</h2>
+            <p class="muted eligibility-banner-desc" style="margin: 0; font-size: 13px;">Verifying academic records, financials, documents, holds, and schedule window...</p>
           </div>
         </div>
       </div>
@@ -1116,7 +1116,7 @@ PAGES.enrollment = {
         <div class="card" style="padding: 22px;">
           <h2 style="font-size: 17px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid var(--ln); padding-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
             <span>Student Academic Record</span>
-            <span id="enrollmentStatusBadge" class="badge" style="font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #e2e8f0; color: #475569;">${escapeHtml(user.status || 'Active')}</span>
+            <span id="enrollmentStatusBadge" class="badge" style="font-size: 11px; padding: 4px 10px; border-radius: 20px;">${escapeHtml(user.status || 'Active')}</span>
           </h2>
           <div id="enrollmentStudentDetails">
             ${detailsList({
@@ -1171,36 +1171,38 @@ PAGES.enrollment = {
       const today = new Date().toISOString().slice(0, 10);
 
       // 1. Render Overall Banner
-      if (isEligible) {
-        banner.style.border = '1px solid #86efac';
-        banner.style.background = '#f0fdf4';
-        banner.innerHTML = `
-          <div style="display: flex; align-items: flex-start; gap: 14px;">
-            <div style="font-size: 22px; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: #dcfce7; color: #16a34a; flex-shrink: 0;">✓</div>
-            <div style="flex: 1;">
-              <h2 style="font-size: 18px; margin: 0 0 4px; font-weight: 600; color: #166534;">Fully Qualified for Enrollment Appointment Booking</h2>
-              <p style="margin: 0 0 6px; font-size: 14px; color: #15803d;">All academic records, financial accounts, holds, and document verification checks are satisfied. You may proceed to select an appointment slot.</p>
+      if (banner) {
+        banner.style.background = '';
+        banner.style.border = '';
+        if (isEligible) {
+          banner.className = 'card enrollment-eligibility-banner is-eligible';
+          banner.innerHTML = `
+            <div style="display: flex; align-items: flex-start; gap: 14px;">
+              <div class="eligibility-banner-icon icon-passed">✓</div>
+              <div style="flex: 1;">
+                <h2 class="eligibility-banner-title">Fully Qualified for Enrollment Appointment Booking</h2>
+                <p class="eligibility-banner-desc">All academic records, financial accounts, holds, and document verification checks are satisfied. You may proceed to select an appointment slot.</p>
+              </div>
             </div>
-          </div>
-        `;
-        if (actionContainer) actionContainer.hidden = false;
-      } else {
-        banner.style.border = '1px solid #fecaca';
-        banner.style.background = '#fef2f2';
-        const reasons = (eligibility && eligibility.reasons && eligibility.reasons.length)
-          ? `<ul style="margin: 8px 0 0 18px; padding: 0; font-size: 13px; color: #b91c1c;">${eligibility.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>`
-          : '';
-        banner.innerHTML = `
-          <div style="display: flex; align-items: flex-start; gap: 14px;">
-            <div style="font-size: 22px; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: #fee2e2; color: #dc2626; flex-shrink: 0;">✕</div>
-            <div style="flex: 1;">
-              <h2 style="font-size: 18px; margin: 0 0 4px; font-weight: 600; color: #991b1b;">Enrollment Blocked — Review Requirements Below</h2>
-              <p style="margin: 0; font-size: 14px; color: #b91c1c;">One or more prerequisites are currently blocking your appointment. Please review the itemized checks below and resolve any deficiencies before booking.</p>
-              ${reasons}
+          `;
+          if (actionContainer) actionContainer.hidden = false;
+        } else {
+          banner.className = 'card enrollment-eligibility-banner is-blocked';
+          const reasons = (eligibility && eligibility.reasons && eligibility.reasons.length)
+            ? `<ul class="eligibility-banner-reasons">${eligibility.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>`
+            : '';
+          banner.innerHTML = `
+            <div style="display: flex; align-items: flex-start; gap: 14px;">
+              <div class="eligibility-banner-icon icon-blocked">✕</div>
+              <div style="flex: 1;">
+                <h2 class="eligibility-banner-title">Enrollment Blocked — Review Requirements Below</h2>
+                <p class="eligibility-banner-desc">One or more prerequisites are currently blocking your appointment. Please review the itemized checks below and resolve any deficiencies before booking.</p>
+                ${reasons}
+              </div>
             </div>
-          </div>
-        `;
-        if (actionContainer) actionContainer.hidden = true;
+          `;
+          if (actionContainer) actionContainer.hidden = true;
+        }
       }
 
       // 2. Render Student Academic Details
@@ -1208,8 +1210,9 @@ PAGES.enrollment = {
         if (statusBadge) {
           const actStatus = student.academicStatus || student.status || 'Active';
           statusBadge.textContent = actStatus;
-          statusBadge.style.background = isEligible ? '#dcfce7' : '#fee2e2';
-          statusBadge.style.color = isEligible ? '#166534' : '#991b1b';
+          statusBadge.style.background = '';
+          statusBadge.style.color = '';
+          statusBadge.className = 'badge ' + (isEligible ? 'badge-eligible' : 'badge-blocked');
         }
         if (studentDetails) {
           studentDetails.innerHTML = detailsList({
@@ -1228,18 +1231,18 @@ PAGES.enrollment = {
       if (scheduleSummary) {
         if (!schedule) {
           scheduleSummary.innerHTML = `
-            <div style="padding: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; color: #92400e; font-size: 13px;">
+            <div class="schedule-empty-alert">
               <strong>No Active Schedule:</strong> An enrollment schedule is not currently published for your year level. Please consult the registrar.
             </div>
           `;
         } else {
           let windowStatus = '';
           if (today < schedule.start_date) {
-            windowStatus = `<span style="color: #0284c7; font-weight: 600;">Upcoming</span> (Opens in ${Math.ceil((new Date(schedule.start_date) - new Date(today)) / (1000 * 60 * 60 * 24))} days)`;
+            windowStatus = `<span class="window-status-upcoming">Upcoming</span> (Opens in ${Math.ceil((new Date(schedule.start_date) - new Date(today)) / (1000 * 60 * 60 * 24))} days)`;
           } else if (today > schedule.end_date) {
-            windowStatus = `<span style="color: #dc2626; font-weight: 600;">Closed</span> (Ended on ${formatDate(schedule.end_date)})`;
+            windowStatus = `<span class="window-status-closed">Closed</span> (Ended on ${formatDate(schedule.end_date)})`;
           } else {
-            windowStatus = `<span style="color: #16a34a; font-weight: 600;">Open Now</span> (Active enrollment week)`;
+            windowStatus = `<span class="window-status-open">Open Now</span> (Active enrollment week)`;
           }
 
           scheduleSummary.innerHTML = `
@@ -1262,28 +1265,24 @@ PAGES.enrollment = {
             <div style="display: flex; flex-direction: column; gap: 12px;">
               ${checks.map(check => {
                 const passed = Boolean(check.passed);
-                const borderCol = passed ? '#bbf7d0' : '#fecaca';
-                const bgCol = passed ? '#f8fafc' : '#fff5f5';
-                const badgeBg = passed ? '#dcfce7' : '#fee2e2';
-                const badgeTxt = passed ? '#166534' : '#991b1b';
                 const icon = passed ? '✓' : '✕';
                 const badgeLabel = passed ? 'Passed' : 'Action Required';
 
                 const detailsHtml = (check.details && check.details.length)
-                  ? `<div style="margin-top: 6px; font-size: 12px; color: var(--mu); line-height: 1.5;">${check.details.map(d => `<div>• ${escapeHtml(d)}</div>`).join('')}</div>`
+                  ? `<div class="check-details">${check.details.map(d => `<div>• ${escapeHtml(d)}</div>`).join('')}</div>`
                   : '';
                 const reasonsHtml = (!passed && check.reasons && check.reasons.length)
-                  ? `<div style="margin-top: 6px; padding: 6px 10px; background: #fee2e2; border-radius: 6px; font-size: 12px; color: #991b1b; line-height: 1.4;">${check.reasons.map(r => `<div>⚠ ${escapeHtml(r)}</div>`).join('')}</div>`
+                  ? `<div class="check-reasons-box">${check.reasons.map(r => `<div>⚠ ${escapeHtml(r)}</div>`).join('')}</div>`
                   : '';
 
                 return `
-                  <div style="border: 1px solid ${borderCol}; background: ${bgCol}; border-radius: 10px; padding: 14px 16px;">
+                  <div class="enrollment-check-item ${passed ? 'is-passed' : 'is-failed'}">
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                       <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-weight: 700; color: ${badgeTxt}; font-size: 16px;">${icon}</span>
-                        <strong style="font-size: 15px; color: var(--tx);">${escapeHtml(check.label)}</strong>
+                        <span class="check-icon ${passed ? 'check-icon-passed' : 'check-icon-failed'}">${icon}</span>
+                        <strong class="check-title">${escapeHtml(check.label)}</strong>
                       </div>
-                      <span style="background: ${badgeBg}; color: ${badgeTxt}; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px;">
+                      <span class="check-badge ${passed ? 'badge-passed' : 'badge-action-required'}">
                         ${badgeLabel}
                       </span>
                     </div>
@@ -1313,14 +1312,15 @@ PAGES.enrollment = {
       })
       .catch(err => {
         if (banner) {
-          banner.style.background = '#fef2f2';
-          banner.style.border = '1px solid #fecaca';
+          banner.style.background = '';
+          banner.style.border = '';
+          banner.className = 'card enrollment-eligibility-banner is-error';
           banner.innerHTML = `
             <div style="display: flex; align-items: center; gap: 14px;">
-              <div style="font-size: 22px; color: #dc2626;">⚠</div>
+              <div class="eligibility-banner-icon icon-error">⚠</div>
               <div>
-                <h2 style="font-size: 17px; margin: 0 0 4px; color: #991b1b;">Unable to Check Eligibility</h2>
-                <p style="margin: 0; font-size: 13px; color: #b91c1c;">${escapeHtml(err.message || 'The server could not be reached. Please reload or try again later.')}</p>
+                <h2 class="eligibility-banner-title">Unable to Check Eligibility</h2>
+                <p class="eligibility-banner-desc">${escapeHtml(err.message || 'The server could not be reached. Please reload or try again later.')}</p>
               </div>
             </div>
           `;
