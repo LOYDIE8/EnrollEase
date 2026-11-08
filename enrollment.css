@@ -93,7 +93,8 @@ a {
   border-radius: 20px;
   box-shadow: var(--sh);
   padding: 24px;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.3s, border-color 0.3s;
+  border: 1px solid var(--ln);
 }
 .hero {
   min-height: 100vh;
@@ -871,4 +872,377 @@ dd {
 [data-theme="dark"] .sidebar-logout:hover {
   color: #f87171 !important;
   background: rgba(239, 68, 68, 0.15) !important;
+}
+
+/* ========================================================
+   Enrollment Details Components & Dark Mode Theme Styling
+   ======================================================== */
+
+/* General Card Dark Mode Override */
+[data-theme="dark"] .card {
+  background: #131d36 !important;
+  border: 1px solid #223254 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* 1. Eligibility Banner */
+.enrollment-eligibility-banner {
+  margin-bottom: 24px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--ln);
+}
+.enrollment-eligibility-banner.is-loading {
+  background: var(--card);
+  border: 1px solid var(--ln);
+}
+.enrollment-eligibility-banner .eligibility-banner-icon {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.enrollment-eligibility-banner .loading-icon {
+  width: 44px;
+  height: 44px;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.enrollment-eligibility-banner .eligibility-banner-title {
+  font-size: 18px;
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--tx);
+}
+.enrollment-eligibility-banner .eligibility-banner-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mu);
+}
+.enrollment-eligibility-banner .eligibility-banner-reasons {
+  margin: 8px 0 0 18px;
+  padding: 0;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* Light mode banner states */
+.enrollment-eligibility-banner.is-eligible {
+  background: #f0fdf4 !important;
+  border: 1px solid #86efac !important;
+}
+.enrollment-eligibility-banner.is-eligible .icon-passed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.enrollment-eligibility-banner.is-eligible .eligibility-banner-title {
+  color: #166534;
+}
+.enrollment-eligibility-banner.is-eligible .eligibility-banner-desc {
+  color: #15803d;
+}
+
+.enrollment-eligibility-banner.is-blocked {
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+}
+.enrollment-eligibility-banner.is-blocked .icon-blocked {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.enrollment-eligibility-banner.is-blocked .eligibility-banner-title {
+  color: #991b1b;
+}
+.enrollment-eligibility-banner.is-blocked .eligibility-banner-desc {
+  color: #b91c1c;
+}
+.enrollment-eligibility-banner.is-blocked .eligibility-banner-reasons {
+  color: #b91c1c;
+}
+
+.enrollment-eligibility-banner.is-error {
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+}
+.enrollment-eligibility-banner.is-error .icon-error {
+  color: #dc2626;
+  font-size: 22px;
+}
+.enrollment-eligibility-banner.is-error .eligibility-banner-title {
+  color: #991b1b;
+  font-size: 17px;
+  margin: 0 0 4px;
+}
+.enrollment-eligibility-banner.is-error .eligibility-banner-desc {
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* Dark mode banner states */
+[data-theme="dark"] .enrollment-eligibility-banner.is-loading {
+  background: #131d36 !important;
+  border: 1px solid #223254 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner .loading-icon {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .enrollment-eligibility-banner.is-eligible {
+  background: rgba(22, 163, 74, 0.15) !important;
+  border: 1px solid rgba(34, 197, 94, 0.38) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-eligible .icon-passed {
+  background: rgba(34, 197, 94, 0.22) !important;
+  color: #4ade80 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-eligible .eligibility-banner-title {
+  color: #86efac !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-eligible .eligibility-banner-desc {
+  color: #bbf7d0 !important;
+}
+
+[data-theme="dark"] .enrollment-eligibility-banner.is-blocked {
+  background: rgba(220, 38, 38, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.38) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-blocked .icon-blocked {
+  background: rgba(239, 68, 68, 0.22) !important;
+  color: #f87171 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-blocked .eligibility-banner-title {
+  color: #fca5a5 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-blocked .eligibility-banner-desc {
+  color: #fecaca !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-blocked .eligibility-banner-reasons {
+  color: #fca5a5 !important;
+}
+
+[data-theme="dark"] .enrollment-eligibility-banner.is-error {
+  background: rgba(220, 38, 38, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.38) !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-error .icon-error {
+  color: #f87171 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-error .eligibility-banner-title {
+  color: #fca5a5 !important;
+}
+[data-theme="dark"] .enrollment-eligibility-banner.is-error .eligibility-banner-desc {
+  color: #fecaca !important;
+}
+
+/* 2. Status Badges & Academic Details */
+.badge-eligible {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+}
+.badge-blocked {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+#enrollmentStatusBadge {
+  background: #e2e8f0;
+  color: #475569;
+}
+[data-theme="dark"] #enrollmentStatusBadge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+[data-theme="dark"] .badge-eligible {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+[data-theme="dark"] .badge-blocked {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* 3. Schedule Summary & Window Alerts */
+.schedule-empty-alert {
+  padding: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 13px;
+}
+[data-theme="dark"] .schedule-empty-alert {
+  background: rgba(245, 158, 11, 0.14) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  color: #fcd34d !important;
+}
+
+.window-status-upcoming {
+  color: #0284c7;
+  font-weight: 600;
+}
+.window-status-closed {
+  color: #dc2626;
+  font-weight: 600;
+}
+.window-status-open {
+  color: #16a34a;
+  font-weight: 600;
+}
+[data-theme="dark"] .window-status-upcoming {
+  color: #38bdf8 !important;
+}
+[data-theme="dark"] .window-status-closed {
+  color: #f87171 !important;
+}
+[data-theme="dark"] .window-status-open {
+  color: #4ade80 !important;
+}
+
+/* 4. Prerequisite Check Items */
+.enrollment-check-item {
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.enrollment-check-item.is-passed {
+  border: 1px solid #bbf7d0;
+  background: #f8fafc;
+}
+.enrollment-check-item.is-failed {
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+}
+
+.enrollment-check-item .check-icon {
+  font-weight: 700;
+  font-size: 16px;
+}
+.enrollment-check-item .check-icon-passed {
+  color: #166534;
+}
+.enrollment-check-item .check-icon-failed {
+  color: #dc2626;
+}
+
+.enrollment-check-item .check-title {
+  font-size: 15px;
+  color: var(--tx);
+}
+
+.enrollment-check-item .check-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+.enrollment-check-item .badge-passed {
+  background: #dcfce7;
+  color: #166534;
+}
+.enrollment-check-item .badge-action-required {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.enrollment-check-item .check-details {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--mu);
+  line-height: 1.5;
+}
+.enrollment-check-item .check-reasons-box {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #fee2e2;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #991b1b;
+  line-height: 1.4;
+}
+
+/* Dark mode for Prerequisite Check Blocks */
+[data-theme="dark"] .enrollment-check-item.is-passed {
+  background: #0d1527 !important;
+  border: 1px solid #1e2e4a !important;
+}
+[data-theme="dark"] .enrollment-check-item.is-passed:hover {
+  border-color: #2b4269 !important;
+}
+[data-theme="dark"] .enrollment-check-item.is-failed {
+  background: rgba(220, 38, 38, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.32) !important;
+}
+[data-theme="dark"] .enrollment-check-item .check-icon-passed {
+  color: #4ade80 !important;
+}
+[data-theme="dark"] .enrollment-check-item .check-icon-failed {
+  color: #f87171 !important;
+}
+[data-theme="dark"] .enrollment-check-item .badge-passed {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+[data-theme="dark"] .enrollment-check-item .badge-action-required {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .enrollment-check-item .check-reasons-box {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 5. CTU COR Sheet Dark Mode (on-screen viewing) */
+@media screen {
+  [data-theme="dark"] .ctu-cor-sheet {
+    background: #131d36 !important;
+    color: #f1f5f9 !important;
+    border-color: #223254 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  }
+  [data-theme="dark"] .ctu-rep,
+  [data-theme="dark"] .ctu-univ-name,
+  [data-theme="dark"] .ctu-campus-name,
+  [data-theme="dark"] .ctu-address,
+  [data-theme="dark"] .ctu-contact-line,
+  [data-theme="dark"] .ctu-mis-title,
+  [data-theme="dark"] .ctu-doc-title-main,
+  [data-theme="dark"] .ctu-doc-term,
+  [data-theme="dark"] .ctu-doc-timestamp,
+  [data-theme="dark"] .ctu-student-info-row,
+  [data-theme="dark"] .ctu-sig-name,
+  [data-theme="dark"] .ctu-sig-title {
+    color: #f1f5f9 !important;
+  }
+  [data-theme="dark"] .ctu-divider-rule,
+  [data-theme="dark"] .ctu-sig-rule {
+    border-top-color: #334155 !important;
+  }
+  [data-theme="dark"] .ctu-grid-table {
+    background: #10192e !important;
+    color: #f1f5f9 !important;
+  }
+  [data-theme="dark"] .ctu-grid-table th {
+    background: #192747 !important;
+    color: #f1f5f9 !important;
+    border-color: #2a3d66 !important;
+  }
+  [data-theme="dark"] .ctu-grid-table td {
+    border-color: #2a3d66 !important;
+    color: #f1f5f9 !important;
+  }
+  [data-theme="dark"] .ctu-table-total-row td {
+    background: #192747 !important;
+    color: #f1f5f9 !important;
+  }
 }
