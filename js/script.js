@@ -350,7 +350,7 @@ function renderQueuePassCard(appt, title = 'Appointment Confirmed!') {
             <span class="q-val">${escapeHtml(user ? user.name : 'Not set')}</span>
           </div>
           <div class="queue-pass-field">
-            <span class="q-label">Student ID</span>
+            <span class="q-label">Student ID / LRN</span>
             <span class="q-val">${escapeHtml(user ? user.sid : 'Not set')}</span>
           </div>
           <div class="queue-pass-field">
@@ -447,7 +447,6 @@ function withSidebar(content) {
       <main class="main">
         <header class="top">
           <div class="topbar-leading">
-            <button class="burger" id="menuButton" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">☰</button>
             <div class="topbar-heading"><span>STUDENT PORTAL</span><strong>Welcome, ${escapeHtml(nameParts[0] || 'Student')}</strong></div>
           </div>
           <a class="topbar-profile" href="profile.html">
@@ -491,7 +490,7 @@ PAGES.login = {
       <div class="logo center">EnrollEase</div>
       <h2 class="center">Welcome back</h2>
       <p class="muted center">Sign in with your registered student account.</p>
-      ${inputField('loginId', 'Email Address or Student ID')}
+      ${inputField('loginId', 'Email address or Student ID / LRN')}
       ${inputField('loginPassword', 'Password', 'password')}
       <a href="#" id="forgotLink">Forgot password?</a><br><br>
       <button type="submit" class="btn" style="width:100%">Login</button>
@@ -506,7 +505,7 @@ PAGES.login = {
       const typedPassword = select('#loginPassword').value;
 
       let valid = true;
-      if (!typedId) valid = showError('loginId', 'Enter your email or student ID.');
+      if (!typedId) valid = showError('loginId', 'Enter your email, student ID, or LRN.');
       if (!typedPassword) valid = showError('loginPassword', 'Enter your password.');
       if (!valid) return;
 
@@ -548,20 +547,18 @@ PAGES.register = {
     <div class="auth"><form class="card" id="registerForm" novalidate>
       <div class="logo center">Enroll<span>Ease</span></div>
       <h2 class="center">Create Account</h2>
-      ${inputField('regName', 'Full Name')}
-      ${inputField('regSid', 'Student ID', 'text', '', 'placeholder="2024-00000"')}
-      ${inputField('regEmail', 'Email Address', 'email')}
-      ${inputField('regPassword', 'Password', 'password')}
-      ${inputField('regConfirm', 'Confirm Password', 'password')}
-      <button class="btn" style="width:100%">Create Account</button>
-      <p class="center">Have an account? <a href="login.html">Login</a></p>
+      <p class="muted center">Join EnrollEase to manage your enrollment and schedule appointments.</p>
+      ${inputField('regName', 'Full Name', 'text', '', 'placeholder="Juan Dela Cruz"')}
+      ${inputField('regSid', 'Student ID Number / LRN', 'text', '', 'placeholder="8240001 or 12-digit LRN" inputmode="numeric" maxlength="12"')}
+      ${inputField('regEmail', 'Email Address', 'email', '', 'placeholder="student@example.com"')}
+      <a href="register.html" class="btn" style="display:block; text-align:center; text-decoration:none; width:100%; box-sizing:border-box; margin-top:10px;">Proceed to Registration Form</a>
+      <p class="center" style="margin-top:14px;">Have an account? <a href="login.html">Login</a></p>
     </form></div>`,
 
   setup() {
-    select('#registerForm').onsubmit = event => {
-      event.preventDefault();
-      showError('regSid', 'Please register through the secure registration form.');
-    };
+    if (!select('#regProgram')) {
+      window.location.replace('register.html');
+    }
   }
 };
 
@@ -691,7 +688,7 @@ PAGES['book-appointment'] = {
         }
       }
       resultBox.innerHTML = `<h2>${eligibility.eligible ? 'You are qualified to book' : 'Enrollment Appointment Not Available'}</h2>
-        <p>Name: ${escapeHtml(profile.name)} · Student ID: ${escapeHtml(profile.sid)}</p>
+        <p>Name: ${escapeHtml(profile.name)} · Student ID / LRN: ${escapeHtml(profile.sid)}</p>
         <p>Program: ${escapeHtml(profile.program || 'Not on file')} · Campus: ${escapeHtml(profile.campus || 'Not on file')}</p>
         <p>Year level: ${escapeHtml(profile.yearLevel || profile.year || 'Not on file')} · Student status: ${escapeHtml(profile.status || 'Not on file')}</p>
         <p>Assigned Enrollment Week: ${escapeHtml(profile.assignedEnrollmentWeek || 'Not available')}
@@ -1142,7 +1139,7 @@ PAGES.enrollment = {
           </h2>
           <div id="enrollmentStudentDetails">
             ${detailsList({
-              'Student ID': user.sid || 'Not set',
+              'Student ID / LRN': user.sid || 'Not set',
               'Full Name': user.name || 'Not set',
               'Program': user.program || 'Not set',
               'Year Level': user.year || 'Not set',
@@ -1238,7 +1235,7 @@ PAGES.enrollment = {
         }
         if (studentDetails) {
           studentDetails.innerHTML = detailsList({
-            'Student ID': student.sid || user.sid || 'Not set',
+            'Student ID / LRN': student.sid || user.sid || 'Not set',
             'Full Name': student.name || user.name || 'Not set',
             'Program': student.program || user.program || 'Not set',
             'Year Level': student.yearLevel || student.year || user.year || 'Not set',
@@ -1384,7 +1381,7 @@ PAGES.profile = {
         <div class="card sec">
           <h3 style="margin: 0 0 14px 0; font-size: 16px;">Student Record & Academic Profile</h3>
           <dl class="profile-dl">
-            <dt>Student ID</dt><dd class="font-mono"><b>${escapeHtml(user.sid)}</b></dd>
+            <dt>Student ID / LRN</dt><dd class="font-mono"><b>${escapeHtml(user.sid)}</b></dd>
             <dt>Degree Program</dt><dd>${escapeHtml(user.program)}</dd>
             <dt>Year Level</dt><dd><b>${escapeHtml(user.year)}</b></dd>
             <dt>Campus</dt><dd>${escapeHtml(user.campus || 'Not set')}</dd>
@@ -1405,7 +1402,7 @@ PAGES.profile = {
       const user = currentUser();
       const popup = showModal(`
         <h3 style="margin-top:0;">Update Contact Information</h3>
-        <p class="muted" style="margin-bottom:14px; font-size:13px;">Student ID, campus, year level, and enrollment week are protected. You may update your email and contact number.</p>
+        <p class="muted" style="margin-bottom:14px; font-size:13px;">Student ID / LRN, campus, year level, and enrollment week are protected. You may update your email and contact number.</p>
         <form id="contactEditForm" novalidate>
           ${inputField('editEmail', 'Email Address', 'email', user.email)}
           ${inputField('editContact', 'Contact Number', 'tel', user.contact || '')}
@@ -1495,7 +1492,7 @@ PAGES.settings = {
         </div>
       </div>
       <div class="card sec"><h3>Account</h3>
-        ${detailsList({ 'Name': user.name, 'Student ID': user.sid, 'Section': section, 'Email': user.email })}
+        ${detailsList({ 'Name': user.name, 'Student ID / LRN': user.sid, 'Section': section, 'Email': user.email })}
       </div>
 
       <!-- Security / Change Password with Clickable Button (Not in-your-face) -->
