@@ -1,16 +1,35 @@
-# CTU Daanbantayan Campus Enrollment System
+# CTU Daanbantayan Campus Enrollment System (EnrollEase)
 
-This is the Cebu Technological University – Daanbantayan Campus student enrollment appointment system. Its browser interface is served from the project directory; student and administrator actions are handled by PHP/PDO APIs.
+This is the Cebu Technological University – Daanbantayan Campus student enrollment appointment system (EnrollEase). Its browser interface is served from the project directory; student and administrator actions are handled by PHP/PDO APIs.
+
+Repository: `https://github.com/LOYDIE8/EnrollEase.git`
+
+## Quick Start for Team
+
+### Default Test Credentials
+- **Admin Dashboard**: `http://localhost/EnrollEase/admin-login/admin-login.html` (or port `:8888`)
+  - **Username / Email**: `admin` or `admin@example.com`
+  - **Password**: `Admin123!` (or `Admin-Enrollment-2026!`)
+- **Student Portal**: `http://localhost/EnrollEase/login.html` (or port `:8888`)
+  - **Student ID**: `8240000`
+  - **Password**: `Local-Enrollment-Test-2026!`
+
+### Database Setup
+1. In phpMyAdmin (`http://localhost/phpmyadmin`):
+   - Import `database/schema.sql` (creates the `enrollment_system` database, tables, roles, and default admin).
+   - Import `database/enrollment_system.sql` (populates sample test students and enrolled registry entries).
+2. Copy `config/database.example.php` to `config/database.php` if missing (default connects to `127.0.0.1:3306`, user `root`, no password).
+3. Access the portal at `http://localhost/EnrollEase/landing.html` (or `http://localhost:8888/EnrollEase/landing.html`).
 
 ## XAMPP setup
 
-1. Put the project in `C:\xampp\htdocs\PC316v2`.
-2. Start **Apache** and **MySQL** in the XAMPP Control Panel. Open the project using the port shown by Apache's `Listen` setting. This installation listens on port `8888`, so use `http://localhost:8888/PC316v2/`; a default XAMPP Apache installation commonly uses `http://localhost/PC316v2/`.
+1. Put the project in `C:\xampp\htdocs\EnrollEase`.
+2. Start **Apache** and **MySQL** in the XAMPP Control Panel. Open the project using the port shown by Apache's `Listen` setting. This installation listens on port `8888`, so use `http://localhost:8888/EnrollEase/`; a default XAMPP Apache installation commonly uses `http://localhost/EnrollEase/`.
 3. Configure the local database settings. Copy `config\database.example.php` to `config\database.php` if the local config is missing. Defaults are MySQL at `127.0.0.1:3306`, database `enrollment_system`, user `root`, and a blank password. The actual config is ignored by Git.
 4. Open phpMyAdmin and import `database\schema.sql`. It creates/selects `enrollment_system` and creates the complete schema and example enrollment schedules. **Fresh setup = import `database/schema.sql` (creates `enrollment_system`), then optionally `database/enrollment_system.sql` for test students.** The fixture depends on the schema and must be imported second.
 5. To rebuild a disposable development database, import the fresh schema and its fixtures in the order above. Do not drop a database containing records you need to preserve. Do not import `database/enrollment-appointments-migration.sql` or `database/shared-admin-migration.sql` into a fresh database created from `schema.sql`.
 6. For an existing database, back it up and inspect its student records first. If it has the older student schema, run `database/migrations/20261106_align_student_registration_schema.sql`, then apply `database/migrations/20261106_daanbantayan_student_management.sql` to add the Daanbantayan campus relationship, account status, year-level constraint, and admin audit log while preserving students and appointments. Apply `database/migrations/20261106_create_enrolled_student_registry.sql` if the registry table is missing, then `database/migrations/20261108_accept_lrn_student_numbers.sql` to allow both 7-digit CTU IDs beginning with `824` and 12-digit LRNs. Apply `database/migrations/20261106_create_auth_rate_limits.sql` as well if rate limiting is not already configured. These migrations do not drop or recreate the database.
-7. Open `http://localhost:8888/PC316v2/api/student/session.php` in a browser (replace `8888` if Apache uses another port). Once the schema is imported, without a student session it should return JSON containing `"Student sign-in is required."`. If it shows a PHP warning about `config/database.php`, create that file from `config/database.example.php`; if it reports an unknown database, import `database/schema.sql`.
+7. Open `http://localhost:8888/EnrollEase/api/student/session.php` in a browser (replace `8888` if Apache uses another port). Once the schema is imported, without a student session it should return JSON containing `"Student sign-in is required."`. If it shows a PHP warning about `config/database.php`, create that file from `config/database.example.php`; if it reports an unknown database, import `database/schema.sql`.
 8. Create the shared administrator account from PowerShell:
 
    ```powershell

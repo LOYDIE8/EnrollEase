@@ -6,8 +6,8 @@ This integrates enrollment appointments into the existing EnrollEase pages and s
 
 1. Open the XAMPP Control Panel.
 2. Start **Apache** and **MySQL**.
-3. Keep the project under `C:\xampp\htdocs\PC316v2`.
-4. Open the URL matching Apache's `Listen` port. This computer's XAMPP is configured for port `8888`, so open `http://localhost:8888/PC316v2/landing.html`. If your Apache uses the default port `80`, open `http://localhost/PC316v2/landing.html`.
+3. Keep the project under `C:\xampp\htdocs\EnrollEase`.
+4. Open the URL matching Apache's `Listen` port. This computer's XAMPP is configured for port `8888`, so open `http://localhost:8888/EnrollEase/landing.html`. If your Apache uses the default port `80`, open `http://localhost/EnrollEase/landing.html`.
 
 The project uses PHP, Apache, and MySQL/MariaDB only; it does not require Node.js.
 
@@ -59,14 +59,14 @@ SetEnv DB_PORT 3306
 
 Leave `DB_PASSWORD` unset only if the local MySQL `root` account truly has a blank password. Do not use a blank root password on an internet-facing server.
 
-If `config/database.php` is missing, copy `config/database.example.php` to `config/database.php`. The runtime file is intentionally ignored by Git and must exist in the XAMPP-served project directory. Verify the setup by opening `http://localhost:8888/PC316v2/api/student/session.php` (replace `8888` with Apache's configured port); after importing the schema, an unauthenticated request should return JSON saying `Student sign-in is required.` A missing-config PHP warning means the runtime file is absent; a database connection error means the configured host, port, user, password, or database name is incorrect.
+If `config/database.php` is missing, copy `config/database.example.php` to `config/database.php`. The runtime file is intentionally ignored by Git and must exist in the XAMPP-served project directory. Verify the setup by opening `http://localhost:8888/EnrollEase/api/student/session.php` (replace `8888` with Apache's configured port); after importing the schema, an unauthenticated request should return JSON saying `Student sign-in is required.` A missing-config PHP warning means the runtime file is absent; a database connection error means the configured host, port, user, password, or database name is incorrect.
 
 ## 4. Install PHPMailer
 
 Install Composer for Windows and select `C:\xampp\php\php.exe` as its PHP interpreter. From PowerShell or Command Prompt, run:
 
 ```powershell
-cd C:\xampp\htdocs\PC316v2
+cd C:\xampp\htdocs\EnrollEase
 composer install
 ```
 
