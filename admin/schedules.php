@@ -355,6 +355,7 @@ function h($value): string
                 <option value="Second Year">Second Year — Week 2</option>
                 <option value="Third Year">Third Year — Week 3</option>
                 <option value="Fourth Year">Fourth Year — Week 4</option>
+                <option value="Late Enrollment">Late Enrollment — Week 5</option>
               </select>
             </label>
             <label>Start date (Monday)<input name="start_date" type="date" required></label>

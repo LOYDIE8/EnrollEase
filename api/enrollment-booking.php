@@ -42,12 +42,29 @@ function enrollment_year_assignment(string $yearLevel): ?array
         'fourth year' => ['year_level' => 'Fourth Year', 'week_number' => 4],
         '4th year' => ['year_level' => 'Fourth Year', 'week_number' => 4],
         'fourth' => ['year_level' => 'Fourth Year', 'week_number' => 4],
+        'late enrollment' => ['year_level' => 'Late Enrollment', 'week_number' => 5],
+        'late' => ['year_level' => 'Late Enrollment', 'week_number' => 5],
+        'week 5' => ['year_level' => 'Late Enrollment', 'week_number' => 5],
     ];
 
     return $assignments[$normalized] ?? null;
 }
 
-function enrollment_schedule_for_student(PDO $database, string $yearLevel): ?array
+function enrollment_late_schedule(PDO $database): ?array
+{
+    $query = $database->prepare(
+        'SELECT schedule_id, year_level, week_number, start_date, end_date, status
+         FROM enrollment_schedules
+         WHERE (week_number = 5 OR LOWER(year_level) = \'late enrollment\')
+           AND status = \'Active\'
+         LIMIT 1'
+    );
+    $query->execute();
+    $schedule = $query->fetch();
+    return $schedule ?: null;
+}
+
+function enrollment_schedule_for_student(PDO $database, string $yearLevel, ?string $currentDate = null): ?array
 {
     $assignment = enrollment_year_assignment($yearLevel);
     if (!$assignment) {
@@ -64,7 +81,28 @@ function enrollment_schedule_for_student(PDO $database, string $yearLevel): ?arr
     );
     $query->execute([$assignment['year_level'], $canonical ?? $assignment['year_level'], $assignment['week_number']]);
     $schedule = $query->fetch();
-    return $schedule ?: null;
+    if (!$schedule) {
+        return null;
+    }
+
+    if ($currentDate === null) {
+        $curDateStmt = $database->query('SELECT CURRENT_DATE');
+        $currentDate = (string)$curDateStmt->fetchColumn();
+    }
+
+    // If student's assigned cohort week has already ended, route to Week 5 (Late Enrollment)
+    if ($currentDate > $schedule['end_date'] && (int)$schedule['week_number'] < 5) {
+        $lateSchedule = enrollment_late_schedule($database);
+        if ($lateSchedule) {
+            $lateSchedule['is_late'] = true;
+            $lateSchedule['missed_week'] = (int)$schedule['week_number'];
+            $lateSchedule['missed_schedule'] = $schedule;
+            return $lateSchedule;
+        }
+    }
+
+    $schedule['is_late'] = false;
+    return $schedule;
 }
 
 function enrollment_lock_schedule_day(PDO $database, string $yearLevel, string $date): ?array
@@ -86,7 +124,11 @@ function enrollment_lock_schedule_day(PDO $database, string $yearLevel, string $
 
 function enrollment_lock_schedule_days(PDO $database, string $yearLevel, array $dates): array
 {
-    $assignment = enrollment_year_assignment($yearLevel);
+    $effectiveSchedule = enrollment_schedule_for_student($database, $yearLevel);
+    if (!$effectiveSchedule) {
+        return [];
+    }
+
     $dates = array_values(array_unique(array_filter(
         $dates,
         static fn($date): bool => is_string($date) && preg_match('/\A\d{4}-\d{2}-\d{2}\z/', $date) === 1
@@ -114,14 +156,9 @@ function enrollment_lock_schedule_days(PDO $database, string $yearLevel, array $
     $query->execute($dates);
 
     $days = [];
-    $canonical = normalize_year_level($yearLevel);
     foreach ($query->fetchAll() as $day) {
-        if (
-            $assignment &&
-            (strcasecmp((string)$day['year_level'], (string)$assignment['year_level']) === 0 ||
-             ($canonical && strcasecmp((string)$day['year_level'], (string)$canonical) === 0) ||
-             (int)$day['week_number'] === (int)$assignment['week_number'])
-        ) {
+        // Must belong to the student's active effective schedule (their cohort week or late enrollment week)
+        if ((int)$day['schedule_id'] === (int)$effectiveSchedule['schedule_id']) {
             $days[$day['appointment_date']] = $day;
         }
     }

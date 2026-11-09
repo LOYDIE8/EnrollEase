@@ -10,7 +10,8 @@
   const message = document.querySelector("#eligibility-manager-message");
   const csrfToken = root.dataset.csrf;
   const apiUrl = "../api/admin/student-eligibility.php";
-  let deletedItems = { subjects: [], financial: [], holds: [], requirements: [] };
+  let lastLoadedRecord = null;
+
   const academicStatuses = ["applicant", "active", "inactive", "graduated", "dropped", "suspended", "enrolling", "enrolled"];
   const gradeStatuses = ["complete", "missing", "incomplete", "deficient", "failed", "pending"];
   const paymentStatuses = ["paid", "unpaid", "pending"];
@@ -46,34 +47,42 @@
 
   function subjectRow(subject = {}) {
     return `<tr data-subject-row>
-      <td><input data-field="subject" maxlength="150" value="${escapeHtml(subject.subject || "")}"></td>
+      <td><input data-field="subject" maxlength="150" value="${escapeHtml(subject.subject || "")}" placeholder="e.g. IT101" required></td>
       <td><select data-field="isRequired">
         <option value="true" ${subject.isRequired ? "selected" : ""}>Required</option>
         <option value="false" ${subject.isRequired ? "" : "selected"}>Not required</option>
       </select></td>
-      <td><input data-field="grade" type="number" min="0" max="100" step="0.01" value="${escapeHtml(subject.grade ?? "")}" placeholder="No grade"></td>
-      <td><select data-field="gradeStatus">${options(gradeStatuses, subject.gradeStatus || "missing")}</select></td>
+      <td><input data-field="grade" type="number" min="0" max="100" step="0.01" value="${escapeHtml(subject.grade ?? "")}" placeholder="Grade (e.g. 1.50)"></td>
+      <td><select data-field="gradeStatus">${options(gradeStatuses, subject.gradeStatus || "complete")}</select></td>
+      <td style="text-align:center;"><button type="button" class="btn-remove-row" data-action="remove-row" title="Remove this subject">✕ Remove</button></td>
     </tr>`;
   }
 
   function financialRow(record = {}) {
     return `<tr data-financial-row data-id="${escapeHtml(record.id ?? "")}">
-      <td><input data-field="balance" type="number" min="0" max="99999999.99" step="0.01" value="${escapeHtml(record.balance ?? "0.00")}" required></td>
-      <td><select data-field="paymentStatus">${options(paymentStatuses, record.paymentStatus || "pending")}</select></td>
-      <td><input data-field="description" maxlength="255" value="${escapeHtml(record.description || "")}" placeholder="Description"></td>
+      <td>
+        <div class="currency-input-wrap">
+          <span class="currency-symbol">₱</span>
+          <input data-field="balance" type="number" min="0" max="99999999.99" step="0.01" value="${escapeHtml(record.balance ?? "0.00")}" required>
+        </div>
+      </td>
+      <td><select data-field="paymentStatus">${options(paymentStatuses, record.paymentStatus || "paid")}</select></td>
+      <td><input data-field="description" maxlength="255" value="${escapeHtml(record.description || "")}" placeholder="Description (e.g. Tuition Balance)"></td>
+      <td style="text-align:center;"><button type="button" class="btn-remove-row" data-action="remove-row" title="Remove this financial record">✕ Remove</button></td>
     </tr>`;
   }
 
   function holdRow(hold = {}) {
     return `<tr data-hold-row data-id="${escapeHtml(hold.id ?? "")}">
-      <td><input data-field="reason" maxlength="500" value="${escapeHtml(hold.reason || "")}" required></td>
+      <td><input data-field="reason" maxlength="500" value="${escapeHtml(hold.reason || "")}" placeholder="Reason for hold" required></td>
       <td><select data-field="status">${options(holdStatuses, hold.status || "active")}</select></td>
+      <td style="text-align:center;"><button type="button" class="btn-remove-row" data-action="remove-row" title="Remove this hold">✕ Remove</button></td>
     </tr>`;
   }
 
   function requirementRow(requirement = {}) {
     return `<tr data-requirement-row data-id="${escapeHtml(requirement.id ?? "")}">
-      <td><input data-field="name" maxlength="180" value="${escapeHtml(requirement.name || "")}" required></td>
+      <td><input data-field="name" maxlength="180" value="${escapeHtml(requirement.name || "")}" placeholder="Requirement name" required></td>
       <td><select data-field="status">${options(requirementStatuses, requirement.status || "unresolved", {
         unresolved: "Unresolved",
         in_progress: "In progress",
@@ -83,77 +92,148 @@
         <option value="true" ${requirement.blocksEnrollment !== false ? "selected" : ""}>Blocks enrollment</option>
         <option value="false" ${requirement.blocksEnrollment === false ? "selected" : ""}>Does not block</option>
       </select></td>
+      <td style="text-align:center;"><button type="button" class="btn-remove-row" data-action="remove-row" title="Remove this requirement">✕ Remove</button></td>
     </tr>`;
   }
 
   function documentRow(documentRecord) {
     return `<tr data-document-row data-document-type-id="${escapeHtml(documentRecord.documentTypeId)}">
-      <td>${escapeHtml(documentRecord.name)}</td>
+      <td><strong>${escapeHtml(documentRecord.name)}</strong></td>
       <td><select data-field="status">${options(documentStatuses, documentRecord.status)}</select></td>
     </tr>`;
   }
 
   function renderRecord(record) {
-    deletedItems = { subjects: [], financial: [], holds: [], requirements: [] };
+    lastLoadedRecord = JSON.parse(JSON.stringify(record));
     const student = record.student;
     const eligibility = record.eligibility;
+    const initials = (student.name || "S").trim().split(/\s+/).map(p => p[0]).slice(0, 2).join("").toUpperCase();
+
+    const verdictHtml = eligibility.eligible
+      ? `<div class="eligibility-verdict verdict-pass">
+          <div class="verdict-icon">✓</div>
+          <div class="verdict-body">
+            <strong>Student is currently ELIGIBLE for enrollment booking</strong>
+            <p>All academic prerequisites, financial clearances, document validations, and administrative checks have passed.</p>
+          </div>
+        </div>`
+      : `<div class="eligibility-verdict verdict-fail">
+          <div class="verdict-icon">✗</div>
+          <div class="verdict-body">
+            <strong>Student is currently NOT ELIGIBLE for enrollment booking</strong>
+            <p>The student has the following outstanding condition(s) blocking enrollment:</p>
+            <ul>${(eligibility.reasons || ["Requirements incomplete."]).map(r => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
+          </div>
+        </div>`;
+
+    const subjectsRows = (record.subjects && record.subjects.length)
+      ? record.subjects.map(subjectRow).join("")
+      : `<tr class="empty-state-row"><td colspan="5">No required subjects on record. Click "Add subject" to add one.</td></tr>`;
+
+    const financialRows = (record.financialRecords && record.financialRecords.length)
+      ? record.financialRecords.map(financialRow).join("")
+      : `<tr class="empty-state-row"><td colspan="4">No financial obligations or balance records on file. (Clean clearance)</td></tr>`;
+
+    const holdsRows = (record.holds && record.holds.length)
+      ? record.holds.map(holdRow).join("")
+      : `<tr class="empty-state-row"><td colspan="3">No active enrollment holds on file.</td></tr>`;
+
+    const requirementsRows = (record.requirements && record.requirements.length)
+      ? record.requirements.map(requirementRow).join("")
+      : `<tr class="empty-state-row"><td colspan="4">No unresolved requirements on file.</td></tr>`;
+
     editor.innerHTML = `
       <section class="panel">
-        <h2>${escapeHtml(student.name)} · ${escapeHtml(student.studentNumber)}</h2>
-        <p>${escapeHtml(student.email)} · ${escapeHtml(student.program)} · Account ${student.accountActive ? "active" : "inactive"}</p>
-        <h3>Current booking eligibility: ${eligibility.eligible ? "Eligible" : "Not eligible"}</h3>
-        <ul>${eligibility.checks.map(check =>
-          `<li><strong>${check.passed ? "✓" : "✗"} ${escapeHtml(check.label)}</strong>
-            ${(check.reasons || []).map(reason => `<div>${escapeHtml(reason)}</div>`).join("")}</li>`
-        ).join("")}</ul>
+        <div class="eligibility-student-header">
+          <div class="eligibility-avatar">${escapeHtml(initials)}</div>
+          <div class="eligibility-header-details">
+            <h2>${escapeHtml(student.name)}</h2>
+            <div class="eligibility-meta-tags">
+              <span class="meta-tag tag-id">ID: ${escapeHtml(student.studentNumber)}</span>
+              <span class="meta-tag">${escapeHtml(student.email)}</span>
+              <span class="meta-tag">${escapeHtml(student.program)}</span>
+              <span class="meta-tag ${student.accountActive ? 'tag-active' : 'tag-inactive'}">Account: ${student.accountActive ? 'Active' : 'Inactive'}</span>
+            </div>
+          </div>
+        </div>
+
+        ${verdictHtml}
       </section>
+
       <form id="eligibility-record-form">
         <section class="panel">
-          <h2>Student status</h2>
-          <label for="eligibility-year-level">Year level</label>
-          <select id="eligibility-year-level" name="yearLevel">
-            <option value="">Not set</option>
-            ${options(["1st Year", "2nd Year", "3rd Year", "4th Year"], canonicalYearLevel(student.yearLevel))}
-          </select>
-          <label for="eligibility-academic-status">Academic status</label>
-          <select id="eligibility-academic-status" name="academicStatus">${options(academicStatuses, student.academicStatus)}</select>
+          <h2>Student Academic Status</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <div>
+              <label for="eligibility-year-level">Year level</label>
+              <select id="eligibility-year-level" name="yearLevel">
+                <option value="">Not set</option>
+                ${options(["1st Year", "2nd Year", "3rd Year", "4th Year"], canonicalYearLevel(student.yearLevel))}
+              </select>
+            </div>
+            <div>
+              <label for="eligibility-academic-status">Academic status</label>
+              <select id="eligibility-academic-status" name="academicStatus">${options(academicStatuses, student.academicStatus)}</select>
+            </div>
+          </div>
         </section>
+
         <section class="panel">
-          <div class="toolbar"><h2>Required subjects and grades</h2><button class="button" type="button" data-add-row="subjects">Add subject</button></div>
+          <div class="toolbar">
+            <h2>Required Subjects and Grades</h2>
+            <button class="button" type="button" data-add-row="subjects">+ Add subject</button>
+          </div>
           <div class="table-wrap"><table>
-            <thead><tr><th>Subject</th><th>Enrollment requirement</th><th>Grade (0-100)</th><th>Grade status</th><th></th></tr></thead>
-            <tbody data-rows="subjects">${record.subjects.map(subjectRow).join("")}</tbody>
+            <thead><tr><th style="width:35%;">Subject</th><th style="width:20%;">Requirement</th><th style="width:20%;">Grade</th><th style="width:15%;">Status</th><th style="width:10%;text-align:center;">Action</th></tr></thead>
+            <tbody data-rows="subjects">${subjectsRows}</tbody>
           </table></div>
         </section>
+
         <section class="panel">
-          <div class="toolbar"><h2>Financial records</h2><button class="button" type="button" data-add-row="financial">Add record</button></div>
+          <div class="toolbar">
+            <h2>Financial Obligations & Balances</h2>
+            <button class="button" type="button" data-add-row="financialRecords">+ Add record</button>
+          </div>
           <div class="table-wrap"><table>
-            <thead><tr><th>Balance</th><th>Payment status</th><th>Description</th><th></th></tr></thead>
-            <tbody data-rows="financialRecords">${record.financialRecords.map(financialRow).join("")}</tbody>
+            <thead><tr><th style="width:25%;">Balance</th><th style="width:25%;">Payment Status</th><th style="width:40%;">Description</th><th style="width:10%;text-align:center;">Action</th></tr></thead>
+            <tbody data-rows="financialRecords">${financialRows}</tbody>
           </table></div>
         </section>
+
         <section class="panel">
-          <div class="toolbar"><h2>Enrollment holds</h2><button class="button" type="button" data-add-row="holds">Add hold</button></div>
+          <div class="toolbar">
+            <h2>Enrollment Holds</h2>
+            <button class="button" type="button" data-add-row="holds">+ Add hold</button>
+          </div>
           <div class="table-wrap"><table>
-            <thead><tr><th>Reason</th><th>Status</th><th></th></tr></thead>
-            <tbody data-rows="holds">${record.holds.map(holdRow).join("")}</tbody>
+            <thead><tr><th style="width:65%;">Reason</th><th style="width:25%;">Hold Status</th><th style="width:10%;text-align:center;">Action</th></tr></thead>
+            <tbody data-rows="holds">${holdsRows}</tbody>
           </table></div>
         </section>
+
         <section class="panel">
-          <div class="toolbar"><h2>Other enrollment requirements</h2><button class="button" type="button" data-add-row="requirements">Add requirement</button></div>
+          <div class="toolbar">
+            <h2>Other Enrollment Requirements</h2>
+            <button class="button" type="button" data-add-row="requirements">+ Add requirement</button>
+          </div>
           <div class="table-wrap"><table>
-            <thead><tr><th>Requirement</th><th>Status</th><th>Enrollment impact</th><th></th></tr></thead>
-            <tbody data-rows="requirements">${record.requirements.map(requirementRow).join("")}</tbody>
+            <thead><tr><th style="width:45%;">Requirement</th><th style="width:25%;">Status</th><th style="width:20%;">Enrollment Impact</th><th style="width:10%;text-align:center;">Action</th></tr></thead>
+            <tbody data-rows="requirements">${requirementsRows}</tbody>
           </table></div>
         </section>
+
         <section class="panel">
-          <h2>Required documents</h2>
+          <h2>Required Documents Verification</h2>
           <div class="table-wrap"><table>
-            <thead><tr><th>Document</th><th>Status</th></tr></thead>
+            <thead><tr><th style="width:60%;">Document Name</th><th style="width:40%;">Verification Status</th></tr></thead>
             <tbody data-rows="documents">${record.documents.map(documentRow).join("")}</tbody>
           </table></div>
         </section>
-        <button class="button primary" type="submit">Save eligibility records</button>
+
+        <div class="admin-form-actions">
+          <button class="button primary" type="submit">Save eligibility records</button>
+          <button class="button secondary" type="button" id="btn-revert-changes">Revert changes</button>
+        </div>
       </form>`;
     editor.hidden = false;
   }
@@ -203,27 +283,32 @@
       grade: row.querySelector('[data-field="grade"]').value,
       gradeStatus: row.querySelector('[data-field="gradeStatus"]').value
     })).filter(row => row.subject !== "");
+
     const financialRecords = collectRows("[data-financial-row]", row => ({
       id: collectId(row),
       balance: row.querySelector('[data-field="balance"]').value,
       paymentStatus: row.querySelector('[data-field="paymentStatus"]').value,
       description: row.querySelector('[data-field="description"]').value
     }));
+
     const holds = collectRows("[data-hold-row]", row => ({
       id: collectId(row),
       reason: row.querySelector('[data-field="reason"]').value,
       status: row.querySelector('[data-field="status"]').value
-    }));
+    })).filter(row => row.reason.trim() !== "");
+
     const requirements = collectRows("[data-requirement-row]", row => ({
       id: collectId(row),
       name: row.querySelector('[data-field="name"]').value,
       status: row.querySelector('[data-field="status"]').value,
       blocksEnrollment: row.querySelector('[data-field="blocksEnrollment"]').value === "true"
-    }));
+    })).filter(row => row.name.trim() !== "");
+
     const documents = collectRows("[data-document-row]", row => ({
       documentTypeId: Number(row.dataset.documentTypeId),
       status: row.querySelector('[data-field="status"]').value
     }));
+
     return {
       csrf_token: csrfToken,
       studentNumber: studentNumberInput.value.trim(),
@@ -272,18 +357,57 @@
   });
 
   root.addEventListener("click", event => {
-    const button = event.target.closest("[data-add-row]");
-    if (!button) return;
-    const rows = editor.querySelector(`[data-rows="${button.dataset.addRow}"]`);
+    // 1. Remove Row Button handler
+    const removeBtn = event.target.closest("[data-action='remove-row']");
+    if (removeBtn) {
+      event.preventDefault();
+      const row = removeBtn.closest("tr");
+      const tbody = row ? row.closest("tbody") : null;
+      if (row) row.remove();
+      if (tbody && tbody.querySelectorAll("tr:not(.empty-state-row)").length === 0) {
+        const colCount = tbody.closest("table").querySelectorAll("thead th").length || 4;
+        tbody.innerHTML = `<tr class="empty-state-row"><td colspan="${colCount}">No records. Click "+ Add" above to add one.</td></tr>`;
+      }
+      return;
+    }
+
+    // 2. Revert Changes Button handler
+    const revertBtn = event.target.closest("#btn-revert-changes");
+    if (revertBtn) {
+      event.preventDefault();
+      if (lastLoadedRecord) {
+        renderRecord(lastLoadedRecord);
+        setMessage("All unsaved changes have been reverted.", false);
+      }
+      return;
+    }
+
+    // 3. Add Row Button handler
+    const addBtn = event.target.closest("[data-add-row]");
+    if (!addBtn) return;
+    event.preventDefault();
+
+    const targetType = addBtn.dataset.addRow;
+    const targetKey = (targetType === "financial" || targetType === "financialRecords") ? "financialRecords" : targetType;
+    const rows = editor.querySelector(`[data-rows="${targetKey}"]`);
     if (!rows) return;
+
+    // Remove any empty state placeholder
+    const emptyPlaceholder = rows.querySelector(".empty-state-row");
+    if (emptyPlaceholder) emptyPlaceholder.remove();
+
     const templates = {
       subjects: subjectRow(),
       financial: financialRow(),
+      financialRecords: financialRow(),
       holds: holdRow(),
       requirements: requirementRow()
     };
-    if (templates[button.dataset.addRow]) {
-      rows.insertAdjacentHTML("beforeend", templates[button.dataset.addRow]);
+
+    if (templates[targetKey]) {
+      rows.insertAdjacentHTML("beforeend", templates[targetKey]);
+      const newlyAddedInput = rows.lastElementChild.querySelector("input");
+      if (newlyAddedInput) newlyAddedInput.focus();
     }
   });
 

@@ -60,23 +60,28 @@ try {
     $currentDateQuery->execute();
     $currentDate = (string)$currentDateQuery->fetchColumn();
     if ($currentDate < $schedule['start_date']) {
+        $msg = !empty($schedule['is_late'])
+            ? 'You missed your assigned enrollment week (Week ' . ($schedule['missed_week'] ?? '') . '). You can only enroll during Late Enrollment, which opens on ' . $schedule['start_date'] . ' (Week 5).'
+            : 'Booking has not opened yet for your year level (opens on ' . $schedule['start_date'] . ').';
         student_json_response([
             'success' => false,
             'eligible' => true,
+            'isLateEnrollment' => !empty($schedule['is_late']),
             'student' => student_public_profile($profile),
             'schedule' => $schedule,
             'slots' => [],
-            'message' => 'Booking has not opened yet for your year level (opens on ' . $schedule['start_date'] . ').',
+            'message' => $msg,
         ], 422);
     }
     if ($currentDate > $schedule['end_date']) {
         student_json_response([
             'success' => false,
             'eligible' => true,
+            'isLateEnrollment' => !empty($schedule['is_late']),
             'student' => student_public_profile($profile),
             'schedule' => $schedule,
             'slots' => [],
-            'message' => 'The booking window for your year level has closed (closed on ' . $schedule['end_date'] . ').',
+            'message' => 'The enrollment booking window has ended (closed on ' . $schedule['end_date'] . '). Please contact the registrar.',
         ], 422);
     }
 

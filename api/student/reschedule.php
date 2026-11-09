@@ -99,14 +99,16 @@ try {
         $database->rollBack();
         student_json_response([
             'success' => false,
-            'message' => 'Booking has not opened yet for your year level (opens on ' . $schedule['start_date'] . ').',
+            'message' => !empty($schedule['is_late'])
+                ? 'You missed your assigned enrollment week. You can only reschedule to Late Enrollment, which opens on ' . $schedule['start_date'] . ' (Week 5).'
+                : 'Booking has not opened yet for your year level (opens on ' . $schedule['start_date'] . ').',
         ], 422);
     }
     if ($currentDate > $schedule['end_date']) {
         $database->rollBack();
         student_json_response([
             'success' => false,
-            'message' => 'The booking window for your year level has closed (closed on ' . $schedule['end_date'] . ').',
+            'message' => 'The enrollment booking window has ended (closed on ' . $schedule['end_date'] . '). Please contact the registrar.',
         ], 422);
     }
     if ($date < $currentDate) {
@@ -117,7 +119,9 @@ try {
         $database->rollBack();
         student_json_response([
             'success' => false,
-            'message' => 'The selected appointment date falls outside your assigned enrollment week (' . $schedule['start_date'] . ' to ' . $schedule['end_date'] . ').',
+            'message' => !empty($schedule['is_late'])
+                ? 'You missed your assigned enrollment week. You can only reschedule to Late Enrollment (' . $schedule['start_date'] . ' to ' . $schedule['end_date'] . ').'
+                : 'The selected appointment date falls outside your assigned enrollment week (' . $schedule['start_date'] . ' to ' . $schedule['end_date'] . ').',
         ], 422);
     }
     if ($date === $originalDate && $time . ':00' === $originalTime) {

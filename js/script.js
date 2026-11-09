@@ -829,24 +829,32 @@ PAGES.confirmation = {
 PAGES['my-schedule'] = {
   render() {
     const appointments = myAppointments().filter(a => a.type === 'Enrollment Appointment');
-    const active = appointments.filter(a => a.status !== 'Cancelled');
-    const upcoming = active.filter(a => !isPast(a)).sort((a, b) => appointmentDateTime(a) - appointmentDateTime(b));
-    const past = appointments.filter(a => a.status === 'Cancelled' || isPast(a))
+    const active = appointments.filter(a => a.status !== 'Cancelled' && a.status !== 'Completed')
+      .sort((a, b) => appointmentDateTime(a) - appointmentDateTime(b));
+    const past = appointments.filter(a => a.status === 'Cancelled' || a.status === 'Completed')
       .sort((a, b) => appointmentDateTime(b) - appointmentDateTime(a));
 
-    const card = (appt, isUpcoming) => {
-      const canChange = isUpcoming &&
+    const card = (appt, isActive) => {
+      const isMissed = isPast(appt) && appt.status !== 'Completed';
+      const canChange = isActive &&
         ['Submitted', 'Pending', 'Approved', 'Confirmed', 'Rescheduled'].includes(appt.status);
       const referenceNumber = escapeHtml(appt.referenceNumber || appt.id);
+      let statusBadge = `<span class="badge ${appt.status === 'Rescheduled' ? 'p' : ''}">${escapeHtml(appt.status)}</span>`;
+      if (isMissed) {
+        statusBadge = `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;">Missed — Please Reschedule</span>`;
+      } else if (!isActive) {
+        statusBadge = `<span class="badge d">${escapeHtml(appt.status)}</span>`;
+      }
+
       return `
-      <div class="card ap">
+      <div class="card ap" style="${isMissed ? 'border-left:4px solid #ef4444;' : ''}">
         <div>
           <b>${appt.type}</b>
-          <div class="muted">${formatDate(appt.date)} · ${appt.time}${isUpcoming ? ' · Queue ' + appt.queue : ''}</div>
+          <div class="muted">${formatDate(appt.date)} · ${appt.time}${isActive ? ' · Queue ' + appt.queue : ''}</div>
+          ${isMissed ? '<div style="font-size:12px;color:#dc2626;margin-top:4px;">This scheduled appointment time has passed. Please reschedule below.</div>' : ''}
         </div>
-        <span class="badge ${isUpcoming ? (appt.status === 'Rescheduled' ? 'p' : '') : 'd'}">
-          ${isUpcoming ? appt.status : (appt.status === 'Cancelled' ? 'Cancelled' : 'Completed')}</span>
-        ${isUpcoming ? `<div class="row">
+        ${statusBadge}
+        ${isActive ? `<div class="row">
           <button class="btn sm alt" type="button" data-details="${referenceNumber}">View Details</button>
           ${canChange ? `<button class="btn sm" type="button" data-reschedule="${referenceNumber}">Reschedule</button>
           <button class="btn sm alt" type="button" data-cancel="${referenceNumber}">Cancel</button>` : ''}
@@ -856,10 +864,10 @@ PAGES['my-schedule'] = {
 
     return withSidebar(`
       <h1>My Schedule</h1>
-      <h2>Upcoming Appointments</h2>
-      ${upcoming.map(a => card(a, true)).join('') ||
+      <h2>Active Appointments</h2>
+      ${active.map(a => card(a, true)).join('') ||
         '<div class="card muted">Nothing booked yet. <a href="book-appointment.html">Book an appointment</a></div>'}
-      <h2 class="sec">Past Appointments</h2>
+      <h2 class="sec">Past / Cancelled Appointments</h2>
       ${past.map(a => card(a, false)).join('') || '<div class="card muted">No past appointments.</div>'}`);
   },
 
@@ -979,23 +987,29 @@ PAGES['my-schedule'] = {
 /* 9. Reschedule */
 PAGES.reschedule = {
   render() {
-    const referenceNumber = sessionStorage.getItem('ee_reschedule_reference');
-    const appointment = allAppointments().find(item =>
-      item.referenceNumber === referenceNumber && item.status !== 'Cancelled'
-    );
-    if (!appointment) {
+    let referenceNumber = sessionStorage.getItem('ee_reschedule_reference');
+    if (!referenceNumber) {
+      const activeAppt = allAppointments().find(item =>
+        item.status !== 'Cancelled' && item.status !== 'Completed'
+      );
+      if (activeAppt) {
+        referenceNumber = activeAppt.referenceNumber || activeAppt.id;
+        sessionStorage.setItem('ee_reschedule_reference', referenceNumber);
+      }
+    }
+    if (!referenceNumber) {
       goTo('my-schedule');
       return '';
     }
     return withSidebar(`
       <h1>Reschedule Appointment</h1>
       <div class="card">
-        <p class="muted">Choose a new date and time for appointment ${escapeHtml(referenceNumber)}.</p>
+        <p class="muted">Choose a new date and time for appointment <b>${escapeHtml(referenceNumber)}</b>.</p>
         <div id="rescheduleStatus" class="muted" aria-live="polite">Loading available enrollment times…</div>
-        <label for="rescheduleSlot">Available dates and times</label>
+        <label for="rescheduleSlot" style="margin-top:12px;display:block;">Available dates and times</label>
         <select id="rescheduleSlot" disabled><option value="">Loading…</option></select>
-        <div id="rescheduleError" class="err" role="alert"></div>
-        <div class="row">
+        <div id="rescheduleError" class="err" role="alert" style="margin-top:8px;"></div>
+        <div class="row" style="margin-top:16px;">
           <button class="btn" id="confirmRescheduleButton" type="button" disabled>Confirm Reschedule</button>
           <button class="btn alt" id="cancelRescheduleButton" type="button">Back to My Schedule</button>
         </div>
@@ -1021,29 +1035,41 @@ PAGES.reschedule = {
     };
     const loadSlots = async () => {
       statusBox.textContent = 'Loading available enrollment times…';
+      statusBox.className = 'muted';
       slotSelect.disabled = true;
       confirmButton.disabled = true;
       const response = await studentFetch(
-        'api/student/slots.php?excludeReference=' + encodeURIComponent(referenceNumber),
+        'api/student/slots.php?excludeReference=' + encodeURIComponent(referenceNumber || ''),
         { credentials: 'same-origin' }
       );
       if (response.status === 401) return redirectToLogin();
       const result = await response.json();
       if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Available enrollment times could not be loaded.');
+        statusBox.textContent = result.message || 'Available enrollment times could not be loaded.';
+        statusBox.className = 'err';
+        slotSelect.innerHTML = '<option value="">No slots available</option>';
+        return;
       }
       if (!result.eligible) {
-        throw new Error('You are no longer eligible to reschedule. Contact the registrar.');
+        statusBox.textContent = 'You are no longer eligible to reschedule. Please contact the registrar.';
+        statusBox.className = 'err';
+        slotSelect.innerHTML = '<option value="">Not eligible to reschedule</option>';
+        return;
       }
-      slots = result.slots;
+      slots = result.slots || [];
+      if (slots.length === 0) {
+        slotSelect.innerHTML = '<option value="">No slots available</option>';
+        slotSelect.disabled = true;
+        statusBox.textContent = result.message || 'No appointment slots are currently open for rescheduling.';
+        return;
+      }
       slotSelect.innerHTML = '<option value="">Select a new date and time</option>' +
         slots.map((slot, index) =>
           `<option value="${index}" ${slot.remaining === 0 ? 'disabled' : ''}>${escapeHtml(formatDate(slot.date))} · ${slot.dailyBooked}/${slot.dailyCapacity} students (${slot.dailyRemaining} daily slots left) · ${escapeHtml(slot.time)}${slot.remaining === 0 ? ' — FULL' : ''}</option>`
         ).join('');
-      slotSelect.disabled = slots.length === 0;
-      statusBox.textContent = result.message || (slots.length
-        ? 'Select an available time. Your current appointment remains active until the change is confirmed.'
-        : 'No enrollment appointment times are available for your assigned week.');
+      slotSelect.disabled = false;
+      statusBox.textContent = result.message || 'Select an available time. Your current appointment remains active until the change is confirmed.';
+      statusBox.className = 'muted';
     };
 
     slotSelect.onchange = () => {

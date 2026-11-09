@@ -25,6 +25,17 @@ try {
 
         $record = admin_student_eligibility_record($database, $studentNumber);
         if (!$record) {
+            $regStmt = $database->prepare("SELECT student_number, last_name, first_name, program, year_level FROM enrolled_student_registry WHERE student_number = ? LIMIT 1");
+            $regStmt->execute([$studentNumber]);
+            $regStudent = $regStmt->fetch();
+            if ($regStudent) {
+                $name = trim(($regStudent['first_name'] ?? '') . ' ' . $regStudent['last_name']);
+                admin_json_response([
+                    'success' => false,
+                    'in_registry' => true,
+                    'message' => "Student {$regStudent['student_number']} ({$name} · {$regStudent['program']}) is in the official registry, but has not created a student portal account yet."
+                ], 404);
+            }
             admin_json_response(['success' => false, 'message' => 'No student was found with that student number.'], 404);
         }
         admin_json_response(['success' => true, 'record' => $record]);
@@ -252,6 +263,18 @@ try {
         }
     }
 
+    $submittedSubjects = array_column($subjects, 'subject');
+    if (!empty($submittedSubjects)) {
+        $subPlaceholders = implode(',', array_fill(0, count($submittedSubjects), '?'));
+        $delSubs = $database->prepare("DELETE FROM student_enrollment_subjects WHERE student_id = ? AND subject NOT IN ($subPlaceholders)");
+        $delSubs->execute(array_merge([$studentId], $submittedSubjects));
+        $delGrades = $database->prepare("DELETE FROM grades WHERE student_id = ? AND subject NOT IN ($subPlaceholders)");
+        $delGrades->execute(array_merge([$studentId], $submittedSubjects));
+    } else {
+        $database->prepare("DELETE FROM student_enrollment_subjects WHERE student_id = ?")->execute([$studentId]);
+        $database->prepare("DELETE FROM grades WHERE student_id = ?")->execute([$studentId]);
+    }
+
     $financialLookup = $database->prepare(
         'SELECT id FROM financial_records WHERE id = ? AND student_id = ? LIMIT 1 FOR UPDATE'
     );
@@ -287,6 +310,15 @@ try {
         ]);
     }
 
+    $submittedFinIds = array_filter(array_column($financialRecords, 'id'));
+    if (!empty($submittedFinIds)) {
+        $finPlaceholders = implode(',', array_fill(0, count($submittedFinIds), '?'));
+        $delFin = $database->prepare("DELETE FROM financial_records WHERE student_id = ? AND id NOT IN ($finPlaceholders)");
+        $delFin->execute(array_merge([$studentId], array_values($submittedFinIds)));
+    } else {
+        $database->prepare("DELETE FROM financial_records WHERE student_id = ?")->execute([$studentId]);
+    }
+
     $holdLookup = $database->prepare(
         'SELECT id FROM enrollment_holds WHERE id = ? AND student_id = ? LIMIT 1 FOR UPDATE'
     );
@@ -306,6 +338,15 @@ try {
             throw new InvalidArgumentException('An enrollment hold does not belong to this student.');
         }
         $holdUpdate->execute([$hold['reason'], $hold['status'], $hold['id'], $studentId]);
+    }
+
+    $submittedHoldIds = array_filter(array_column($holds, 'id'));
+    if (!empty($submittedHoldIds)) {
+        $holdPlaceholders = implode(',', array_fill(0, count($submittedHoldIds), '?'));
+        $delHolds = $database->prepare("DELETE FROM enrollment_holds WHERE student_id = ? AND id NOT IN ($holdPlaceholders)");
+        $delHolds->execute(array_merge([$studentId], array_values($submittedHoldIds)));
+    } else {
+        $database->prepare("DELETE FROM enrollment_holds WHERE student_id = ?")->execute([$studentId]);
     }
 
     $requirementLookup = $database->prepare(
@@ -342,6 +383,15 @@ try {
             $requirement['id'],
             $studentId,
         ]);
+    }
+
+    $submittedReqIds = array_filter(array_column($requirements, 'id'));
+    if (!empty($submittedReqIds)) {
+        $reqPlaceholders = implode(',', array_fill(0, count($submittedReqIds), '?'));
+        $delReqs = $database->prepare("DELETE FROM student_enrollment_requirements WHERE student_id = ? AND id NOT IN ($reqPlaceholders)");
+        $delReqs->execute(array_merge([$studentId], array_values($submittedReqIds)));
+    } else {
+        $database->prepare("DELETE FROM student_enrollment_requirements WHERE student_id = ?")->execute([$studentId]);
     }
 
     $requiredDocumentQuery = $database->prepare(
@@ -424,6 +474,7 @@ function admin_student_eligibility_record(PDO $database, string $studentNumber):
         return null;
     }
     $studentId = (int)$student['student_id'];
+    ensure_student_baseline_eligibility($database, $studentId);
 
     $subjects = [];
     $requiredSubjects = $database->prepare(

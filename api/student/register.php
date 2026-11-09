@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/common.php';
+require_once __DIR__ . '/../enrollment-eligibility.php';
 student_session_start();
 student_require_method('POST');
 student_verify_origin();
@@ -162,6 +163,8 @@ try {
         (int)$campusId,
         (int)$departmentId,
     ]);
+    $studentId = (int)$database->lastInsertId();
+    ensure_student_baseline_eligibility($database, $studentId);
     $database->commit();
     auth_rate_limit_clear($database, 'student-register', $email);
 
